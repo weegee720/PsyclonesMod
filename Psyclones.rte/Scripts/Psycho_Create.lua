@@ -1,6 +1,6 @@
 function do_create(self)
 	-- Set up constants
-	self.DistPerPower = 50
+	self.DistPerPower = 40
 	self.CoolDownInterval = 2500
 	self.PrintSkills = true
 
@@ -52,6 +52,12 @@ end
 
 function Psyclones_GetFullPower(actor, basepower)
 	return math.floor(basepower * (actor.Health / 100))
+end
+
+function Psyclones_AddPsyEffect(pos)
+	local pix = CreateMOPixel("Huge Glow");
+	pix.Pos = pos
+	MovableMan:AddParticle(pix);
 end
 
 function Psyclones_MakeItem(item, class)

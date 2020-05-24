@@ -21,29 +21,53 @@ function do_update(self)
 					end
 				end
 			else
-				if not actor:IsInGroup("Brains") then
+				if not actor:IsInGroup("Brains") and actor.Health > 0 then
 				-- Search for enemies to find threat
 					local d = SceneMan:ShortestDistance(actor.Pos, self.ThisActor.Pos, true).Magnitude;
 					
 					if d < self.EffectiveDistance and d < self.NearestEnemyDist then
 						local angle = Psyclones_GetAngle(self.Pos, actor.Pos)
-						local pos = self.Pos + Vector(math.cos(-angle) * 10, math.sin(-angle) * 10)
+						local pos = self.Pos + Vector(math.cos(-angle) * 20, math.sin(-angle) * 20)
 
 						--[[local pix = CreateMOPixel("Purple Glow 1");
 						pix.Pos = pos
 						MovableMan:AddParticle(pix);]]--
 						
-						local eactorpos = pos
-						local vectortoactor = actor.Pos - eactorpos;
-						local moid = SceneMan:CastMORay(eactorpos , vectortoactor , self.ThisActor.ID , self.ThisActor.Team , -1, false , 1);
-						local mo = MovableMan:GetMOFromID(moid);
+						local offsets = {Vector(0,-15), Vector(0,-7), Vector(0,0), Vector(0,7), Vector(0,15)}
+						
+						for i = 1, #offsets do
+							local actorpos = pos
+							local vectortoactor = actor.Pos + offsets[i] - actorpos;
+							local moid = SceneMan:CastMORay(actorpos , vectortoactor , self.ThisActor.ID , self.ThisActor.Team , -1, false , 6);
+							local mo = MovableMan:GetMOFromID(moid);
+							
+							--[[local pix = CreateMOPixel("Purple Glow 1");
+							pix.Pos = actorpos
+							MovableMan:AddParticle(pix);
+							
+							local pix = CreateMOPixel("Purple Glow 1");
+							pix.Pos = actorpos + vectortoactor
+							MovableMan:AddParticle(pix);]]--
 
-						if mo ~= nil then
-							if mo.ClassName == "AHuman" then
-								self.Threat = ToAHuman(mo)
-								self.NearestEnemyDist = d;
-							end
-						end -- if
+							if mo ~= nil then
+								--[[local pix = CreateMOPixel("Purple Glow 1");
+								pix.Pos = mo.Pos
+								MovableMan:AddParticle(pix);]]--
+							
+								if mo.ClassName == "AHuman" then
+									self.Threat = ToAHuman(mo)
+									self.NearestEnemyDist = d;
+								else
+									local mo = MovableMan:GetMOFromID(mo.RootID);
+									if mo ~= nil then
+										if mo.ClassName == "AHuman" then
+											self.Threat = ToAHuman(mo)
+											self.NearestEnemyDist = d;
+										end
+									end
+								end
+							end -- if
+						end
 					end
 				end
 			end
@@ -63,10 +87,15 @@ function do_update(self)
 		if MovableMan:IsActor(self.Threat) and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) then
 			-- Check for applicable skill from closest to farthest
 			-- Damage and gib
-			if self.Energy >= 80 and self.NearestEnemyDist < self.EffectiveDistance * 0.4 and self.FullPower > 14 then
-				self.Energy = self.Energy - 80
+			if self.Energy >= 50 and self.NearestEnemyDist < self.EffectiveDistance * 0.4 and self.FullPower > 15 then
+				self.Energy = self.Energy - 50
 				
 				local dam = self.FullPower * 7
+				
+				-- Never kill a healthy actor from a single hit
+				if dam > 99 then
+					dam = 99
+				end
 
 				if self.PrintSkills then
 					print ("Damage - "..tostring(math.ceil(self.FullPower)).." - "..tostring(math.ceil(dam)).." - "..self.Threat.PresetName)
@@ -75,11 +104,11 @@ function do_update(self)
 				if self.Threat.Health <= dam then
 					local found = false
 				
-					-- Find head
+					-- Try to explode head or just gib otherwise
 					for i = 1 , MovableMan:GetMOIDCount() - 1 do
 						local mo = MovableMan:GetMOFromID(i);
 						if mo.RootID == self.Threat.ID  then
-							-- Try to explode head or just gib otherwise
+							-- Find head
 							if string.find(mo.PresetName, "Head") or string.find(mo.PresetName, "head") then
 								local g = CreateTDExplosive("Head bomb")
 								if g ~= nil then
@@ -104,6 +133,7 @@ function do_update(self)
 					self.DamageThreat = self.Threat;
 				end
 				
+				Psyclones_AddPsyEffect(self.Pos)
 				self.CoolDownTimer:Reset();
 			end--]]--
 
@@ -129,18 +159,25 @@ function do_update(self)
 						newweap.Vel = vel
 						
 						weap.ToDelete = true
+						Psyclones_AddPsyEffect(self.Pos)
 						self.CoolDownTimer:Reset();
 					end
 				end
 			end--]]--
 
 			-- Push target
-			if self.Energy >= 30 and self.NearestEnemyDist < self.EffectiveDistance * 0.8 then
+			if self.Energy >= 20 and self.NearestEnemyDist < self.EffectiveDistance * 0.8 then
+				local pow = 2 * self.FullPower
+			
+				if pow > 15 then
+					pow = 15
+				end
+			
 				if self.PrintSkills then
-					print ("Push - "..tostring(math.ceil(self.FullPower)).." - "..tostring(math.ceil(4 * self.FullPower)).." - "..self.Threat.PresetName)
+					print ("Push - "..tostring(math.ceil(self.FullPower)).." - "..tostring(math.ceil(pow)).." - "..self.Threat.PresetName)
 				end
 
-				self.Energy = self.Energy - 30
+				self.Energy = self.Energy - 20
 
 				local target = self.Threat.Pos
 				local angle, d = Psyclones_GetAngle(self.Pos, target)
@@ -151,7 +188,7 @@ function do_update(self)
 				--MovableMan:AddParticle(pix);
 				
 				-- Apply forces
-				self.Threat:AddAbsImpulseForce(Vector(math.cos(-angle) * (4 * self.FullPower), math.sin(-angle) * (4 * self.FullPower)), Vector(0,0))
+				self.Threat:AddAbsImpulseForce(Vector(math.cos(-angle) * (pow), math.sin(-angle) * (pow)), Vector(0,0))
 				
 				--local pix = CreateMOPixel("Purple Glow 1");
 				--pix.Pos = pos
@@ -160,6 +197,7 @@ function do_update(self)
 				--CF_DrawString(tostring(angle), self.Pos + Vector(0,-160), 200, 200)
 				--CF_DrawString(tostring(cosa), self.Pos + Vector(0,-150), 200, 200)
 				--CF_DrawString(tostring(math.floor(angle * (180 / 3.14))), self.Pos + Vector(0,-140), 200, 200)
+				Psyclones_AddPsyEffect(self.Pos)
 				self.CoolDownTimer:Reset();
 			end--]]--
 
@@ -184,17 +222,19 @@ function do_update(self)
 						weap.ToDelete = true
 					end
 				end
+				Psyclones_AddPsyEffect(self.Pos)
 				self.CoolDownTimer:Reset();
 			end--]]--
 			
 			-- Distort aiming
-			if self.Energy >= 20 then
+			if self.Energy >= 10 then
 				if self.PrintSkills then
 					print ("Distort - "..tostring(math.ceil(self.FullPower)).." - "..self.Threat.PresetName)
 				end
 
-				self.Energy = self.Energy - 20
+				self.Energy = self.Energy - 10
 				self.AimDistortThreat = self.Threat;
+				Psyclones_AddPsyEffect(self.Pos)
 				self.CoolDownTimer:Reset();
 			end--]]--
 		
@@ -234,8 +274,8 @@ function do_update(self)
 			
 			-- Heal if there's no one nearby and we have enough power
 			if self.Threat == nil then
-				if self.Energy >= 75 and self.ThisActor.Health < 100 then
-					self.Energy = self.Energy - 10
+				if self.Energy >= 55 and self.ThisActor.Health < 100 then
+					self.Energy = self.Energy - 5
 					self.ThisActor.Health = self.ThisActor.Health + 1
 				end
 			end

@@ -8,7 +8,7 @@ print ("Loading "..factionid)
 CF_Factions[#CF_Factions + 1] = factionid
 
 CF_FactionNames[factionid] = "Psyclones";
-CF_FactionDescriptions[factionid] = "";
+CF_FactionDescriptions[factionid] = "Abomnations escaped from some secret lab, weak but armed with extreme psi powers.";
 CF_FactionPlayable[factionid] = true;
 
 CF_RequiredModules[factionid] = {"Psyclones.rte"}
@@ -27,7 +27,7 @@ CF_ExpansionBonuses[factionid] = 0
 -- Gold per turn increase
 CF_MineBonuses[factionid] = 0
 -- Science per turn increase
-CF_LabBonuses[factionid] = 0
+CF_LabBonuses[factionid] = 10
 -- Delivery time reduction
 CF_AirfieldBonuses[factionid] = 0
 -- Superweapon targeting reduction
@@ -155,24 +155,24 @@ CF_ItmTypes[factionid][i] = CF_WeaponTypes.SHIELD;
 CF_ItmPowers[factionid][i] = 1
 
 i = #CF_ItmNames[factionid] + 1
-CF_ItmNames[factionid][i] = "Pistol"
-CF_ItmPresets[factionid][i] = "Pistol"
-CF_ItmModules[factionid][i] = "Base.rte"
-CF_ItmPrices[factionid][i] = 5
+CF_ItmNames[factionid][i] = "XM-2 Pistol"
+CF_ItmPresets[factionid][i] = "XM-2 Pistol"
+CF_ItmModules[factionid][i] = "Psyclones.rte"
+CF_ItmPrices[factionid][i] = 35
 CF_ItmDescriptions[factionid][i] = ""
 CF_ItmUnlockData[factionid][i] = 500
 CF_ItmTypes[factionid][i] = CF_WeaponTypes.PISTOL;
 CF_ItmPowers[factionid][i] = 1
 
 i = #CF_ItmNames[factionid] + 1
-CF_ItmNames[factionid][i] = "SMG"
-CF_ItmPresets[factionid][i] = "SMG"
-CF_ItmModules[factionid][i] = "Base.rte"
-CF_ItmPrices[factionid][i] = 20
+CF_ItmNames[factionid][i] = "XM-10 Submachine Gun"
+CF_ItmPresets[factionid][i] = "XM-10 Submachine Gun"
+CF_ItmModules[factionid][i] = "Psyclones.rte"
+CF_ItmPrices[factionid][i] = 70
 CF_ItmDescriptions[factionid][i] = ""
 CF_ItmUnlockData[factionid][i] = 250
-CF_ItmTypes[factionid][i] = CF_WeaponTypes.PISTOL;
-CF_ItmPowers[factionid][i] = 2
+CF_ItmTypes[factionid][i] = CF_WeaponTypes.RIFLE;
+CF_ItmPowers[factionid][i] = 3
 
 i = #CF_ItmNames[factionid] + 1
 CF_ItmNames[factionid][i] = "Battle Rifle"
