@@ -130,13 +130,13 @@ function Psyclones_GetFullPower(actor, basepower)
 end
 
 function Psyclones_AddEffect(pos, preset)
-	local pix = CreateMOPixel(preset);
+	local pix = CreateMOPixel(preset, "Psyclones.rte");
 	pix.Pos = pos
 	MovableMan:AddParticle(pix);
 end
 
 function Psyclones_AddPsyEffect(pos)
-	local pix = CreateMOPixel("Huge Glow");
+	local pix = CreateMOPixel("Huge Glow", "Psyclones.rte");
 	pix.Pos = pos
 	MovableMan:AddParticle(pix);
 end

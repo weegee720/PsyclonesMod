@@ -89,7 +89,7 @@ function do_update_drophsipseeker(self)
 				
 				local pos = self.Pos + Vector(math.cos(angle) * 30, math.sin(angle) * 30);
 				if SceneMan:GetTerrMatter(pos.X, pos.Y) == 0 then
-					local damagePar = CreateMOPixel("Small Wormhole Emission Particle "..math.random(2));
+					local damagePar = CreateMOPixel("Small Wormhole Emission Particle "..math.random(2), "Psyclones.rte");
 					
 					damagePar.Pos = pos;
 					damagePar.Vel = Vector(-(math.cos(angle) * 30), -(math.sin(angle) * 30));
@@ -99,7 +99,7 @@ function do_update_drophsipseeker(self)
 				end
 			end
 		
-			local pix = CreateMOPixel("Purple Glow ".. math.random(11));
+			local pix = CreateMOPixel("Purple Glow ".. math.random(11), "Psyclones.rte");
 			pix.Pos = self.ThisActor.Pos
 			MovableMan:AddParticle(pix);
 		end
@@ -108,7 +108,7 @@ function do_update_drophsipseeker(self)
 			self.ThisActor.Health = 0
 			
 			for i = 1, 1 do 
-				local pix = CreateMOSRotating("Terrain Eat Explosion");
+				local pix = CreateMOSRotating("Terrain Eat Explosion", "Psyclones.rte");
 				if pix then
 					pix.Pos = self.ThisActor.Pos
 					MovableMan:AddParticle(pix);

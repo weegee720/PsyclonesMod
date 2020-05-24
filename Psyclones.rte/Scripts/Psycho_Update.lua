@@ -275,7 +275,7 @@ function do_update(self)
 				end
 				
 				for i = 1, self.FullPower / 4 do
-					local pix = CreateMOPixel("Hit particle");
+					local pix = CreateMOPixel("Hit particle", "Psyclones.rte");
 					pix.Pos = self.Threat.Pos + Vector(-2 + math.random(4), -2 + math.random(4))
 					pix.Vel = Vector(-2 + math.random(4), -2 + math.random(4))
 					MovableMan:AddParticle(pix); 
@@ -459,7 +459,7 @@ function do_update(self)
 		end
 		
 		if glownum > 0 then
-			local pix = CreateMOPixel("Purple Glow "..glownum);
+			local pix = CreateMOPixel("Purple Glow "..glownum, "Psyclones.rte");
 			pix.Pos = self.Pos
 			MovableMan:AddParticle(pix);
 		end
@@ -507,7 +507,7 @@ function do_update(self)
 
 				MovableMan:AddActor(a)
 				
-				local eff = CreateMOSRotating("Avatar effect")
+				local eff = CreateMOSRotating("Avatar effect", "Psyclones.rte")
 				if eff ~= nil then
 					eff.Pos = a.Pos
 					MovableMan:AddParticle(eff)
