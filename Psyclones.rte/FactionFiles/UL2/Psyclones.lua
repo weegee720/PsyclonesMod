@@ -309,3 +309,26 @@ CF_ItmUnlockData[factionid][i] = 2750
 CF_ItmTypes[factionid][i] = CF_WeaponTypes.HEAVY;
 CF_ItmPowers[factionid][i] = 9
 
+-- This is important, UL2 don't support bombs, 
+-- if you won't check for this UL2 won't load this file
+if CF_BombNames ~= nil then
+	local n = #CF_BombNames + 1
+	CF_BombNames[n] = "XM-50 Seeker Bomb"
+	CF_BombPresets[n] = "XM-50 Seeker Bomb"
+	CF_BombModules[n] = "Psyclones.rte"
+	CF_BombClasses[n] = "TDExplosive"
+	CF_BombPrices[n] = 70
+	CF_BombDescriptions[n] = " An autonomous, dropship deployable compact drone that will seek for enemies and explode on approach."
+	CF_BombOwnerFactions[n] = {"Psyclones"}
+	CF_BombUnlockData[n] = 1200
+
+	local n = #CF_BombNames + 1
+	CF_BombNames[n] = "XM-52 Dropship Seeker Bomb"
+	CF_BombPresets[n] = "XM-52 Dropship Seeker Bomb"
+	CF_BombModules[n] = "Psyclones.rte"
+	CF_BombClasses[n] = "TDExplosive"
+	CF_BombPrices[n] = 100
+	CF_BombDescriptions[n] = "An autonomous, dropship deployable compact mine that will seek for incoming crafts and explode on approach."
+	CF_BombOwnerFactions[n] = {"Psyclones"}
+	CF_BombUnlockData[n] = 1600
+end
