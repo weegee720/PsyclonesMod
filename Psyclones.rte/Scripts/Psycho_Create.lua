@@ -1,8 +1,8 @@
 function do_create(self)
 	-- Set up constants
-	self.DistPerPower = 500
-	self.CoolDownInterval = 1000
-
+	self.DistPerPower = 50
+	self.CoolDownInterval = 2500
+	self.PrintSkills = true
 
 	-- Find our owner actor
 	local found;
@@ -26,21 +26,14 @@ function do_create(self)
 	if self.ThisActor then
 		-- Calculate actor base power
 		self.BasePower = Psyclones_GetBasePower(self.ThisActor);
-		print(self.BasePower)
+		--print(self.BasePower)
 	else 
-		print (self.ThisActor)
+		--print (self.ThisActor)
 	end
 	
 	self.Energy = 100;
 	self.Timer = Timer();
 	self.CoolDownTimer = Timer()
-	
-	
-	-- Check angles
-	--[[local em = CreateAEmitter("Test Emitter")
-	em.Pos = Vector(3500,400);
-	em.RotAngle = 45 / (180 / 3.14)
-	MovableMan:AddParticle(em);]]--
 end
 
 function Psyclones_GetBasePower(actor)
@@ -49,7 +42,7 @@ function Psyclones_GetBasePower(actor)
 	elseif actor.PresetName == "Psyclone Medium" then
 		return 5
 	elseif actor.PresetName == "Psyclone Heavy" then
-		return 9
+		return 8
 	elseif actor.PresetName == "Psyclone Mastermind" then
 		return 20
 	end
@@ -61,41 +54,37 @@ function Psyclones_GetFullPower(actor, basepower)
 	return math.floor(basepower * (actor.Health / 100))
 end
 
-function Psyclones_GetAngle(from, to)
-	local a = math.abs(to.X - from.X)
-	local b = math.abs(to.Y - from.Y)
-	local c = SceneMan:ShortestDistance(from, to, true).Magnitude;
-	
-	local cosa =  (b * b + c * c - a * a) / (2 * b * c)
-	local angle = math.acos(cosa)
-
-	if (from.X > to.X and from.Y > to.Y) then
-		angle = angle + 3.14 -- 
-	elseif (from.X < to.X and from.Y > to.Y) then
-		angle = 3.14 - angle --
-	elseif (from.X > to.X and from.Y < to.Y) then
-		angle = 2 * 3.14 - angle
+function Psyclones_MakeItem(item, class)
+	if class == "HeldDevice" then
+		return CreateHeldDevice(item)
+	elseif class == "HDFirearm" then
+		return CreateHDFirearm(item)
+	elseif class == "TDExplosive" then
+		return CreateTDExplosive(item)
+	elseif class == "ThrownDevice" then
+		return CreateThrownDevice(item)
 	end
 	
-	return angle, c
+	return nil;
 end
 
-
 function Psyclones_GetAngle(from, to)
-	local a = to.X - from.X
-	local b = to.Y - from.Y
+	local b = to.X - from.X
+	local a = to.Y - from.Y
 	local c = SceneMan:ShortestDistance(from, to, true).Magnitude;
 	
 	local cosa =  (b * b + c * c - a * a) / (2 * b * c)
 	local angle = math.acos(cosa)
 	
 	if (from.X > to.X and from.Y > to.Y) then
-		angle = angle + 3.14 -- 
+		angle = angle
 	elseif (from.X < to.X and from.Y > to.Y) then
-		angle = 3.14 - angle --
+		angle = angle --
+	elseif (from.X < to.X and from.Y < to.Y) then
+		angle = -angle
 	elseif (from.X > to.X and from.Y < to.Y) then
-		angle = 2 * 3.14 - angle
+		angle =  2 * 3.14 - angle --
 	end
 	
-	return angle, c
+	return angle, c, cosa
 end
