@@ -434,7 +434,7 @@ function do_update(self)
 			
 			-- Reduce health if it's avatar
 			if self.ThisActor.PresetName == "Psyclone Avatar" then
-				self.ThisActor.Health = self.ThisActor.Health - 2
+				self.ThisActor.Health = self.ThisActor.Health - math.random(3)
 				
 				if self.ThisActor.Health < 1 then
 					gibthisactor = true					
