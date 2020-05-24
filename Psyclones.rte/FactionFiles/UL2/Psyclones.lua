@@ -61,6 +61,7 @@ CF_CraftClasses[factionid] = "ACDropShip";
 CF_CraftPrices[factionid] = 120;
 
 -- Define superweapon script
+--CF_SuperWeaponScripts[factionid] = "UnmappedLands2.rte/SuperWeapons/Bombing.lua"
 CF_SuperWeaponScripts[factionid] = "Psyclones.rte/FactionFiles/UL2/Superweapon/Psyclones_Bombing.lua"
 
 -- Define default tactical AI model
@@ -69,7 +70,7 @@ CF_FactionAIModels[factionid] = "CONSOLE HUNTERS"
 -- Specify presets which are not affected by tactical AI unit management
 -- AI will never ever give orders to units in this list
 if CF_UnassignableUnits ~= nil then
-	CF_UnassignableUnits[factionid] = {"Brain Seeker", "Dropship Seeker", "Seeker"}
+	CF_UnassignableUnits[factionid] = {"Brain Seeker", "Dropship Seeker", "Seeker", "Long Fuse Seeker"}
 end
 
 

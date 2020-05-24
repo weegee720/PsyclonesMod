@@ -7,7 +7,7 @@ function do_create_seeker(self)
 	self.SeekRange = 700
 	
 	if self.PresetName == "Long Fuse Seeker" then
-		self.FuzeTime = 12000
+		self.FuzeTime = 18000
 	end
 	
 	self.Fuze = Timer()
