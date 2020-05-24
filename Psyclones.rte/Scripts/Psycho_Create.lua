@@ -54,6 +54,12 @@ function Psyclones_GetFullPower(actor, basepower)
 	return math.floor(basepower * (actor.Health / 100))
 end
 
+function Psyclones_AddEffect(pos, preset)
+	local pix = CreateMOPixel(preset);
+	pix.Pos = pos
+	MovableMan:AddParticle(pix);
+end
+
 function Psyclones_AddPsyEffect(pos)
 	local pix = CreateMOPixel("Huge Glow");
 	pix.Pos = pos

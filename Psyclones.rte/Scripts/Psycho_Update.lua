@@ -85,12 +85,26 @@ function do_update(self)
 		
 		-- If we have target then use some skills on it
 		if MovableMan:IsActor(self.Threat) and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) then
+			local tosuccess = 1.0
+		
+			-- Calculate fail probability
+			-- Try to find helmet and increase fail probability
+			--[[for i = 1 , MovableMan:GetMOIDCount() - 1 do
+				local mo = MovableMan:GetMOFromID(i);
+				if mo.RootID == self.Threat.ID  then
+					if string.find(mo.PresetName, "Helmet") or string.find(mo.PresetName, "helmet") then
+						tosuccess = 0.65
+						break;
+					end
+				end
+			end -- Never used for now]]--
+		
 			-- Check for applicable skill from closest to farthest
 			-- Damage and gib
-			if self.Energy >= 50 and self.NearestEnemyDist < self.EffectiveDistance * 0.4 and self.FullPower > 15 then
+			if self.Energy >= 50 and self.NearestEnemyDist < self.EffectiveDistance * 0.4 and self.FullPower > 10 then
 				self.Energy = self.Energy - 50
 				
-				local dam = self.FullPower * 7
+				local dam = self.FullPower * 5
 				
 				-- Never kill a healthy actor from a single hit
 				if dam > 99 then
@@ -119,6 +133,7 @@ function do_update(self)
 									MovableMan:AddItem(g);
 									g:GibThis();
 									found = true
+									Psyclones_AddPsyEffect(mo.Pos)
 									break;
 								end
 							end
@@ -126,11 +141,14 @@ function do_update(self)
 					end
 					
 					if not found then
+						Psyclones_AddPsyEffect(self.Threat.Pos)
 						self.Threat:GibThis();
 					end
 				else
 					self.Threat.Health = self.Threat.Health - dam;
 					self.DamageThreat = self.Threat;
+					self.Threat:AddAbsImpulseForce(Vector(0, -2), Vector(0,0))
+					Psyclones_AddPsyEffect(self.Threat.Pos)
 				end
 				
 				Psyclones_AddPsyEffect(self.Pos)
@@ -150,15 +168,23 @@ function do_update(self)
 					if newweap ~= nil then
 						self.Energy = self.Energy - 40
 					
-						newweap.Pos = weap.Pos;
-						MovableMan:AddItem(newweap)
+						-- If enemy holds grenade then explode it
+						if newweap.ClassName == "TDExplosive" then
+							newweap:GibThis();
+						else
+							-- Pull wepon otherwise
+							newweap.Pos = weap.Pos;
+							MovableMan:AddItem(newweap)
+							
+							local angle, d = Psyclones_GetAngle(self.Pos, weap.Pos)
+							local vel = Vector(-math.cos(-angle) * (3 * self.FullPower), -math.sin(-angle) * (3 * self.FullPower))
+							
+							newweap.Vel = vel
+							
+							Psyclones_AddPsyEffect(weap.Pos)
+							weap.ToDelete = true
+						end
 						
-						local angle, d = Psyclones_GetAngle(self.Pos, weap.Pos)
-						local vel = Vector(-math.cos(-angle) * (3 * self.FullPower), -math.sin(-angle) * (3 * self.FullPower))
-						
-						newweap.Vel = vel
-						
-						weap.ToDelete = true
 						Psyclones_AddPsyEffect(self.Pos)
 						self.CoolDownTimer:Reset();
 					end
@@ -197,6 +223,7 @@ function do_update(self)
 				--CF_DrawString(tostring(angle), self.Pos + Vector(0,-160), 200, 200)
 				--CF_DrawString(tostring(cosa), self.Pos + Vector(0,-150), 200, 200)
 				--CF_DrawString(tostring(math.floor(angle * (180 / 3.14))), self.Pos + Vector(0,-140), 200, 200)
+				Psyclones_AddPsyEffect(self.Threat.Pos)
 				Psyclones_AddPsyEffect(self.Pos)
 				self.CoolDownTimer:Reset();
 			end--]]--
