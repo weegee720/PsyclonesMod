@@ -1,8 +1,69 @@
+function do_shield()
+	local maxparticles = 100
+	local minspeed = 10
+	local radius = 200
+	local momentum = 0
+	local dist = 0
+	
+	for p in MovableMan.Particles do
+	
+		if p.HitsMOs and p.Vel.Magnitude >= minspeed then
+			for i = 1, #G_Shields do
+				if G_Active[i] and MovableMan:IsActor(G_Shields[i]) and G_Shields[i].Health > 0 then
+					if G_Shields[i].Team ~= p.Team then
+						dist = SceneMan:ShortestDistance(G_Shields[i].Pos , p.Pos,true).Magnitude
+					
+						if dist <= radius and dist > radius * 0.5 then
+							--if dist > radius * 0.98 then
+								Psyclones_AddPsyEffect(p.Pos)
+							--end
+							
+							--local coeff = 5 / p.Mass;
+							
+							--print (coeff)
+							
+							p.Vel = p.Vel - Vector(p.Vel.X * 0.45, p.Vel.Y * 0.45)
+						end
+					end
+				else
+					G_Active[i] = false
+				end
+			end
+		end
+	end
+		
+	local shields = {}
+	local active = {}
+	
+	for i = 1, #G_Active do
+		if G_Active[i] then
+			shields[#shields + 1] = G_Shields[i]
+			active[#shields] = true
+		end
+	end
+
+	G_Shields = shields;
+	G_Active = active;
+end
+
 function do_update(self)
 	-- Don't do anything when in edit mode
 	if ActivityMan:GetActivity().ActivityState == Activity.EDITING then
 		return
 	end
+	
+	if G_Shields ~= nil then
+		do_shield()
+	end
+	
+	--[[if G_Shields ~= nil then
+		if G_ShieldCoroutine == nil then
+			G_ShieldCoroutine = coroutine.create(do_shield)
+			coroutine.resume(G_ShieldCoroutine)
+		else
+			coroutine.resume(G_ShieldCoroutine)
+		end
+	end]]--
 
 	if MovableMan:IsActor(self.ThisActor) then
 		local gibthisactor = false

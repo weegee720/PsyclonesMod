@@ -72,6 +72,18 @@ function do_create(self)
 			self.StealEnabled = false;
 			self.DistortEnabled = false;
 			self.RegenEnabled = false;
+			
+			if G_Shields == nil then
+				G_Shields = {}
+			end
+			if G_Active == nil then
+				G_Active = {}
+			end
+			
+			G_Shields[#G_Shields + 1] = self.ThisActor
+			G_Active[#G_Shields] = true
+			
+			print (#G_Shields)
 		end
 	else 
 		--print (self.ThisActor)
