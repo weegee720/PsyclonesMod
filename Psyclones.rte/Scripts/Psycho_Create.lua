@@ -1,8 +1,8 @@
 function do_create(self)
 	-- Set up constants
-	self.DistPerPower = 400
+	self.DistPerPower = 40
 	self.CoolDownInterval = 2500
-	self.PrintSkills = true
+	self.PrintSkills = false;--true
 
 	self.WeaponTeleportEnabled = true;
 	self.DamageEnabled = true;
@@ -43,7 +43,7 @@ function do_create(self)
 		if self.ThisActor.PresetName == "Psyclone Avatar" then
 			self.CoolDownInterval = 1500
 			self.Energy = 100000;
-			--self.Scale = 0;
+			self.Scale = 0;
 		end
 	else 
 		--print (self.ThisActor)

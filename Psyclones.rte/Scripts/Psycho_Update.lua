@@ -38,33 +38,36 @@ function do_update(self)
 					
 					-- Find only nearest enemies
 					if d < self.EffectiveDistance and d < nearestenemydist then
-						local angle = Psyclones_GetAngle(self.Pos, actor.Pos)
-						local pos = self.Pos + Vector(math.cos(-angle) * 20, math.sin(-angle) * 20)
+						-- Search for targets only if we have enough power and not recharging
+						if self.Energy >= 25 and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) then
+							local angle = Psyclones_GetAngle(self.Pos, actor.Pos)
+							local pos = self.Pos + Vector(math.cos(-angle) * 20, math.sin(-angle) * 20)
 
-						-- To improve enemy visibility cast rays across the whole enemy figure
-						local offsets = {Vector(0,-15), Vector(0,-7), Vector(0,0), Vector(0,7), Vector(0,15)}
-						
-						for i = 1, #offsets do
-							local actorpos = pos
-							local vectortoactor = actor.Pos + offsets[i] - actorpos;
-							local moid = SceneMan:CastMORay(actorpos , vectortoactor , self.ThisActor.ID , self.ThisActor.Team , -1, false , 4);
-							local mo = MovableMan:GetMOFromID(moid);
+							-- To improve enemy visibility cast rays across the whole enemy figure
+							local offsets = {Vector(0,-15), Vector(0,-7), Vector(0,0), Vector(0,7), Vector(0,15)}
 							
-							if mo ~= nil then
-								if mo.ClassName == "AHuman" then
-									self.Threat = ToAHuman(mo)
-									nearestenemydist = d;
-								else
-									local mo = MovableMan:GetMOFromID(mo.RootID);
-									if mo ~= nil then
-										if mo.ClassName == "AHuman" then
-											self.Threat = ToAHuman(mo)
-											nearestenemydist = d;
+							for i = 1, #offsets do
+								local actorpos = pos
+								local vectortoactor = actor.Pos + offsets[i] - actorpos;
+								local moid = SceneMan:CastMORay(actorpos , vectortoactor , self.ThisActor.ID , self.ThisActor.Team , -1, false , 4);
+								local mo = MovableMan:GetMOFromID(moid);
+								
+								if mo ~= nil then
+									if mo.ClassName == "AHuman" then
+										self.Threat = ToAHuman(mo)
+										nearestenemydist = d;
+									else
+										local mo = MovableMan:GetMOFromID(mo.RootID);
+										if mo ~= nil then
+											if mo.ClassName == "AHuman" then
+												self.Threat = ToAHuman(mo)
+												nearestenemydist = d;
+											end
 										end
 									end
-								end
-							end -- if
-						end -- for
+								end -- if
+							end -- for
+						end
 						
 						if actor:HasObject("Smpl. #47 Psi Inhibitor") then
 							inhibitors = inhibitors + 1
@@ -93,10 +96,6 @@ function do_update(self)
 		-- Check for applicable skill from closest to farthest
 		-- Teleport closest weapon
 		if self.Energy >= 55 and self.WeaponTeleportEnabled and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) and self.ThisActor.EquippedItem == nil then
-			if self.PrintSkills then
-				print ("Teleport - "..tostring(math.ceil(self.FullPower)))
-			end
-			
 			local nearestitmdist = 1000000
 			local nearestitem = nil
 
@@ -114,6 +113,10 @@ function do_update(self)
 				
 			-- Teleport weapon
 			if nearestitem ~= nil then
+				if self.PrintSkills then
+					print ("Teleport - "..tostring(math.ceil(self.FullPower)))
+				end
+			
 				self.Energy = self.Energy - 55
 				Psyclones_AddPsyEffect(self.Pos)
 				Psyclones_AddPsyEffect(nearestitem.Pos)
@@ -131,8 +134,8 @@ function do_update(self)
 		-- If we have target then use some skills on it
 		if MovableMan:IsActor(self.Threat) then
 			-- Damage and gib
-			if self.Energy >= 50 and nearestenemydist < self.EffectiveDistance * 0.4 and self.FullPower > 8 and self.DamageEnabled and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval)then
-				self.Energy = self.Energy - 50
+			if self.Energy >= 65 and nearestenemydist < self.EffectiveDistance * 0.4 and self.FullPower > 8 and self.DamageEnabled and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval)then
+				self.Energy = self.Energy - 65
 
 				if self.PrintSkills then
 					print ("Damage - "..tostring(math.ceil(self.FullPower)).." - "..self.Threat.PresetName)
@@ -155,15 +158,15 @@ function do_update(self)
 
 			-- Steal weapon
 			if self.Energy >= 40 and nearestenemydist < self.EffectiveDistance * 0.6 and self.StealEnabled and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) then
-				if self.PrintSkills then
-					print ("Steal - "..tostring(math.ceil(self.FullPower)).." - "..self.Threat.PresetName)
-				end
-
 				local weap = self.Threat.EquippedItem;
 
 				if weap ~= nil then
 					local newweap = Psyclones_MakeItem(weap.PresetName, weap.ClassName)
 					if newweap ~= nil then
+						if self.PrintSkills then
+							print ("Steal - "..tostring(math.ceil(self.FullPower)).." - "..self.Threat.PresetName)
+						end
+
 						self.Energy = self.Energy - 40
 					
 						-- If enemy holds grenade then explode it
@@ -248,6 +251,7 @@ function do_update(self)
 			end--]]--
 		end
 		
+		-- Do distortion
 		if MovableMan:IsActor(self.AimDistortThreat) and not self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) then
 			self.AimDistortThreat:GetController():SetState(Controller.AIM_UP, true)
 			
@@ -258,6 +262,7 @@ function do_update(self)
 			self.AimDistortThreat = nil;
 		end
 
+		-- Fo distortion after damage
 		if MovableMan:IsActor(self.DamageThreat) and not self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) then
 			self.DamageThreat:GetController():SetState(Controller.BODY_CROUCH, true)
 			self.DamageThreat:GetController():SetState(Controller.AIM_DOWN, true)
@@ -326,6 +331,13 @@ function do_update(self)
 
 			MovableMan:AddActor(a)
 			
+			local eff = CreateMOSRotating("Avatar effect")
+			if eff ~= nil then
+				eff.Pos = a.Pos
+				MovableMan:AddParticle(eff)
+				eff:GibThis()
+			end
+			
 			gibthisactor = true
 			self.ThisActor.ToDelete = true;
 		end
@@ -357,11 +369,13 @@ function do_update(self)
 		if gibthisactor then
 			--self.ThisActor:GibThis();
 			self.ThisActor.Health = 0
+			self.ThisActor = nil
 		end
 		
 		if gibthreat then
 			--self.Threat:GibThis();
-			self.ThisActor.Health = 0
+			self.Threat.Health = 0
+			self.Threat = nil
 		end
 	end
 end
