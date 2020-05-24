@@ -2,7 +2,7 @@ function Create(self)
 	self.fireTimer = Timer();
 	self.chargeCounter = 0;
 
-	self.maxCharge = 20;
+	self.maxCharge = 16;
 end
 
 function Update(self)
@@ -13,7 +13,10 @@ function Update(self)
 		end
 	else
 		if self.fireTimer:IsPastSimMS(200) and self.chargeCounter > 0 then
-			self.chargeCounter = self.chargeCounter - 1
+			self.chargeCounter = self.chargeCounter - 4
+			if self.chargeCounter < 0 then
+				self.chargeCounter = 0
+			end
 			self.fireTimer:Reset();
 		end
 	end

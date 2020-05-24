@@ -42,7 +42,7 @@ function Update(self)
 	end
 
 	if self.lifeTimer:IsPastSimMS(2000) then
-		local pix = CreateMOPixel("Purple Glow ".. math.random(5));
+		local pix = CreateMOPixel("Purple Glow ".. math.random(7));
 		pix.Pos = self.Pos - (self.Vel * 6)
 		MovableMan:AddParticle(pix);
 	end
@@ -54,13 +54,13 @@ function Update(self)
 	end
 
 	if self.lifeTimer:IsPastSimMS(3000) then
-		local pix = CreateMOPixel("Purple Glow ".. math.random(5));
+		local pix = CreateMOPixel("Purple Glow ".. math.random(3));
 		pix.Pos = self.Pos - (self.Vel * 8)
 		MovableMan:AddParticle(pix);
 	end
 	
 	if self.lifeTimer:IsPastSimMS(5500) then
-		for i = 1, 3 do
+		for i = -1, 1 do
 			local pix = CreateMOSRotating("Terrain Eat Explosion");
 			pix.Pos = self.Pos + (self.Vel * (i * 4))
 			MovableMan:AddParticle(pix);

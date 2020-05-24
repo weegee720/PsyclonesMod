@@ -1,26 +1,24 @@
 function Create(self)
+	self.hit = 0;
+	local curdist = 35
 
-self.hit = 0;
+	for i = 1,MovableMan:GetMOIDCount()-1 do
+		gun = MovableMan:GetMOFromID(i);
+		if (gun.PresetName == "Psi Lightning Orb") and gun.ClassName == "HDFirearm" and (gun.Pos-self.Pos).Magnitude < curdist then
+			actor = MovableMan:GetMOFromID(gun.RootID);
+			if MovableMan:IsActor(actor) then
+				self.parent = ToActor(actor);
+				if self.parent then
+					self.checkVect = self.parent:GetAimAngle(true); 
+					self.parentgun = ToHDFirearm(gun);
 
-local curdist = 35
-   for i = 1,MovableMan:GetMOIDCount()-1 do
-   	gun = MovableMan:GetMOFromID(i);
-    if (gun.PresetName == "Psi Lightning Orb") and gun.ClassName == "HDFirearm" and (gun.Pos-self.Pos).Magnitude < curdist then
-   	actor = MovableMan:GetMOFromID(gun.RootID);
-     if MovableMan:IsActor(actor) then
-	self.parent = ToActor(actor);
-	self.checkVect = self.parent:GetAimAngle(true); 
-	self.parentgun = ToHDFirearm(gun);
-
-	self.Pos = self.parent.Pos;
-
-	self.Team = self.parent.Team;
-	self.IgnoresTeamHits = true;
-     end
-    end
-   end
-
-
+					self.Pos = self.parent.Pos;
+					self.Team = self.parent.Team;
+					self.IgnoresTeamHits = true;
+				end
+			end
+		end
+	end
 end
 
 function Update(self)

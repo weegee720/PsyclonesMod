@@ -2,7 +2,7 @@ function do_create(self)
 	-- Set up constants
 	self.DistPerPower = 40
 	self.CoolDownInterval = 2500
-	self.PrintSkills = true
+	self.PrintSkills = false
 
 	self.WeaponTeleportEnabled = true;
 	self.DamageEnabled = true;
@@ -68,9 +68,7 @@ end
 
 function Psyclones_GetBasePower(actor)
 	if actor.PresetName == "Psyclone Light" then
-		return 2
-	elseif actor.PresetName == "Psyclone Medium" then
-		return 5
+		return 4
 	elseif actor.PresetName == "Psyclone Heavy" then
 		return 8
 	elseif actor.PresetName == "Psyclone Mastermind" then

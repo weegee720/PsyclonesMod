@@ -27,7 +27,7 @@ CF_ExpansionBonuses[factionid] = 0
 -- Gold per turn increase
 CF_MineBonuses[factionid] = 0
 -- Science per turn increase
-CF_LabBonuses[factionid] = 10
+CF_LabBonuses[factionid] = 0
 -- Delivery time reduction
 CF_AirfieldBonuses[factionid] = 0
 -- Superweapon targeting reduction
@@ -37,8 +37,16 @@ CF_FactoryBonuses[factionid] = 0
 -- Body price reduction
 CF_CloneBonuses[factionid] = 0
 -- HP regeneration increase
-CF_HospitalBonuses[factionid] = 100
+CF_HospitalBonuses[factionid] = 0
 
+-- How many more troops dropship can hold
+CF_DropShipCapacityBonuses[factionid] = math.floor(CF_MaxUnitsPerDropship * 1.5)
+
+CF_HackTimeBonuses[factionid] = 75
+CF_HackRewardBonuses[factionid] = 100
+
+-- Prefered brain inventory items. Brain gets the best available items of the classes specified in list for free.
+CF_PreferedBrainInventory[factionid] = {CF_WeaponTypes.DIGGER, CF_WeaponTypes.RIFLE, CF_WeaponTypes.PISTOL}
 
 -- Define brain unit
 CF_Brains[factionid] = "Psyclone Mastermind";
@@ -54,6 +62,9 @@ CF_CraftPrices[factionid] = 120;
 
 -- Define superweapon script
 CF_SuperWeaponScripts[factionid] = "UnmappedLands2.rte/SuperWeapons/Bombing.lua"
+
+-- Define default tactical AI model
+CF_FactionAIModels[factionid] = "CONSOLE HUNTERS"
 
 -- Define buyable actors available for purchase or unlocks
 CF_ActNames[factionid] = {}
@@ -73,30 +84,32 @@ CF_ActNames[factionid][i] = "Psyclone Light"
 CF_ActPresets[factionid][i] = "Psyclone Light"
 CF_ActModules[factionid][i] = "Psyclones.rte"
 CF_ActPrices[factionid][i] = 75
-CF_ActDescriptions[factionid][i] = "Psyclone Light"
+CF_ActDescriptions[factionid][i] = "A light unit with basic Psi abilities. Nearby units amplify each-other's psi-abilities."
 CF_ActUnlockData[factionid][i] = 0
 CF_ActTypes[factionid][i] = CF_ActorTypes.LIGHT;
 CF_ActPowers[factionid][i] = 2
-
-i = #CF_ActNames[factionid] + 1
-CF_ActNames[factionid][i] = "Psyclone Medium"
-CF_ActPresets[factionid][i] = "Psyclone Medium"
-CF_ActModules[factionid][i] = "Psyclones.rte"
-CF_ActPrices[factionid][i] = 100
-CF_ActDescriptions[factionid][i] = "Psyclone Medium"
-CF_ActUnlockData[factionid][i] = 2000
-CF_ActTypes[factionid][i] = CF_ActorTypes.LIGHT;
-CF_ActPowers[factionid][i] = 4
 
 i = #CF_ActNames[factionid] + 1
 CF_ActNames[factionid][i] = "Psyclone Heavy"
 CF_ActPresets[factionid][i] = "Psyclone Heavy"
 CF_ActModules[factionid][i] = "Psyclones.rte"
 CF_ActPrices[factionid][i] = 150
-CF_ActDescriptions[factionid][i] = "Psyclone Heavy"
-CF_ActUnlockData[factionid][i] = 4000
+CF_ActDescriptions[factionid][i] = "A heavy unit with well developed Psi abilities and quick reflexes. Nearby units amplify each-other's psi-abilities."
+CF_ActUnlockData[factionid][i] = 2500
 CF_ActTypes[factionid][i] = CF_ActorTypes.HEAVY;
 CF_ActPowers[factionid][i] = 6
+
+i = #CF_ActNames[factionid] + 1
+CF_ActNames[factionid][i] = "Sarcophagus"
+CF_ActPresets[factionid][i] = "Sarcophagus"
+CF_ActModules[factionid][i] = "Psyclones.rte"
+CF_ActPrices[factionid][i] = 150
+CF_ActDescriptions[factionid][i] = "Psi power of this psyclone is so enormous that he must be contained in special sarcophagus. He can damage units and deflect incoming dropships, but won't amplify psi-abilities of nearby friendlies."
+CF_ActUnlockData[factionid][i] = 2500
+CF_ActClasses[factionid][i] = "ACrab";
+CF_ActTypes[factionid][i] = CF_ActorTypes.ARMOR;
+CF_ActPowers[factionid][i] = 6
+
 
 -- Define buyable items available for purchase or unlocks
 CF_ItmNames[factionid] = {}
@@ -159,8 +172,8 @@ CF_ItmNames[factionid][i] = "Smpl. #29 Psi Catalyst"
 CF_ItmPresets[factionid][i] = "Smpl. #29 Psi Catalyst"
 CF_ItmModules[factionid][i] = "Psyclones.rte"
 CF_ItmPrices[factionid][i] = 35
-CF_ItmDescriptions[factionid][i] = "Increases psi power of nearby friendly actors by 20%"
-CF_ItmUnlockData[factionid][i] = 1500
+CF_ItmDescriptions[factionid][i] = "An alien device of unknown origin. Increases psi power of nearby friendly actors by 20%"
+CF_ItmUnlockData[factionid][i] = 1000
 CF_ItmTypes[factionid][i] = CF_WeaponTypes.TOOL;
 CF_ItmPowers[factionid][i] = 0
 
@@ -169,9 +182,31 @@ CF_ItmNames[factionid][i] = "Smpl. #47 Psi Inhibitor"
 CF_ItmPresets[factionid][i] = "Smpl. #47 Psi Inhibitor"
 CF_ItmModules[factionid][i] = "Psyclones.rte"
 CF_ItmPrices[factionid][i] = 35
-CF_ItmDescriptions[factionid][i] = "Decreases psi power of nearby hostile actors by 25%"
-CF_ItmUnlockData[factionid][i] = 1500
+CF_ItmDescriptions[factionid][i] = "An alien device of unknown origin. Decreases psi power of nearby hostile actors by 25%"
+CF_ItmUnlockData[factionid][i] = 1000
 CF_ItmTypes[factionid][i] = CF_WeaponTypes.TOOL;
+CF_ItmPowers[factionid][i] = 0
+
+i = #CF_ItmNames[factionid] + 1
+CF_ItmNames[factionid][i] = "XM-14 Wormhole Grenade"
+CF_ItmPresets[factionid][i] = "XM-14 Wormhole Grenade"
+CF_ItmModules[factionid][i] = "Psyclones.rte"
+CF_ItmPrices[factionid][i] = 50
+CF_ItmDescriptions[factionid][i] = "A real wormhole that fits in your pocket. UNSTABLE!!!"
+CF_ItmUnlockData[factionid][i] = 800
+CF_ItmClasses[factionid][i] = "TDExplosive"
+CF_ItmTypes[factionid][i] = CF_WeaponTypes.GRENADE;
+CF_ItmPowers[factionid][i] = 8
+
+i = #CF_ItmNames[factionid] + 1
+CF_ItmNames[factionid][i] = "XM-45 Brain Seeker Pod"
+CF_ItmPresets[factionid][i] = "XM-45 Brain Seeker Pod"
+CF_ItmModules[factionid][i] = "Psyclones.rte"
+CF_ItmPrices[factionid][i] = 75
+CF_ItmDescriptions[factionid][i] = "An autonomous compact drone that will seek for enemy brain, revealing everything on it's way."
+CF_ItmUnlockData[factionid][i] = 1200
+CF_ItmClasses[factionid][i] = "TDExplosive"
+CF_ItmTypes[factionid][i] = CF_WeaponTypes.GRENADE;
 CF_ItmPowers[factionid][i] = 0
 
 i = #CF_ItmNames[factionid] + 1
@@ -180,9 +215,19 @@ CF_ItmPresets[factionid][i] = "XM-2 Pistol"
 CF_ItmModules[factionid][i] = "Psyclones.rte"
 CF_ItmPrices[factionid][i] = 35
 CF_ItmDescriptions[factionid][i] = "Compact fully automatic energy pistol with small ammo capacity but high rate of fire."
+CF_ItmUnlockData[factionid][i] = 0
+CF_ItmTypes[factionid][i] = CF_WeaponTypes.PISTOL;
+CF_ItmPowers[factionid][i] = 4
+
+i = #CF_ItmNames[factionid] + 1
+CF_ItmNames[factionid][i] = "Smpl. #01 Psi Lightning Orb"
+CF_ItmPresets[factionid][i] = "Smpl. #01 Psi Lightning Orb"
+CF_ItmModules[factionid][i] = "Psyclones.rte"
+CF_ItmPrices[factionid][i] = 50
+CF_ItmDescriptions[factionid][i] = "An alien device of unknown origin. Compact, light and capable of delivering enough damage."
 CF_ItmUnlockData[factionid][i] = 500
 CF_ItmTypes[factionid][i] = CF_WeaponTypes.PISTOL;
-CF_ItmPowers[factionid][i] = 2
+CF_ItmPowers[factionid][i] = 6
 
 i = #CF_ItmNames[factionid] + 1
 CF_ItmNames[factionid][i] = "XM-10 Submachine Gun"
@@ -200,7 +245,7 @@ CF_ItmPresets[factionid][i] = "XM-92B Heavy Sniper"
 CF_ItmModules[factionid][i] = "Psyclones.rte"
 CF_ItmPrices[factionid][i] = 250
 CF_ItmDescriptions[factionid][i] = "Experimental heavy rapid-fire laser sniper with low ammo capacity"
-CF_ItmUnlockData[factionid][i] = 3500
+CF_ItmUnlockData[factionid][i] = 2000
 CF_ItmTypes[factionid][i] = CF_WeaponTypes.SNIPER;
 CF_ItmPowers[factionid][i] = 9
 
@@ -210,6 +255,17 @@ CF_ItmPresets[factionid][i] = "XM-75 Type D Machinegun"
 CF_ItmModules[factionid][i] = "Psyclones.rte"
 CF_ItmPrices[factionid][i] = 200
 CF_ItmDescriptions[factionid][i] = "Experimental machinegun capable of delivering short bursts of dense firepower."
-CF_ItmUnlockData[factionid][i] = 2500
+CF_ItmUnlockData[factionid][i] = 1500
 CF_ItmTypes[factionid][i] = CF_WeaponTypes.HEAVY;
 CF_ItmPowers[factionid][i] = 8
+
+i = #CF_ItmNames[factionid] + 1
+CF_ItmNames[factionid][i] = "XM-13 Wormhole Emitter"
+CF_ItmPresets[factionid][i] = "XM-13 Wormhole Emitter"
+CF_ItmModules[factionid][i] = "Psyclones.rte"
+CF_ItmPrices[factionid][i] = 220
+CF_ItmDescriptions[factionid][i] = "Experimental portable wormhole emitter made to cut through heavily fortified bunkers."
+CF_ItmUnlockData[factionid][i] = 2750
+CF_ItmTypes[factionid][i] = CF_WeaponTypes.HEAVY;
+CF_ItmPowers[factionid][i] = 9
+

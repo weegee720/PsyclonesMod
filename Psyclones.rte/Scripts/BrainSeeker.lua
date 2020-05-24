@@ -1,4 +1,4 @@
-print ("Reloadin")
+--print ("Reloadin")
 
 dofile("Psyclones.rte/Scripts/BrainSeeker_Create.lua")
 dofile("Psyclones.rte/Scripts/BrainSeeker_Update.lua")

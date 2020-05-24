@@ -320,7 +320,7 @@ function do_update(self)
 			
 			-- Reduce health if it's avatar
 			if self.ThisActor.PresetName == "Psyclone Avatar" then
-				self.ThisActor.Health = self.ThisActor.Health - 1
+				self.ThisActor.Health = self.ThisActor.Health - 2
 				
 				if self.ThisActor.Health < 1 then
 					gibthisactor = true					
@@ -351,7 +351,7 @@ function do_update(self)
 		end
 		
 		-- Spawn avatar if we're dying
-		if self.ThisActor.Health <= 0 and self.ThisActor.PresetName ~= "Psyclone Avatar" then
+		if math.random() < 0.1 and self.ThisActor.Health <= 0 and self.ThisActor.PresetName ~= "Psyclone Avatar" then
 			local a = CreateAHuman("Psyclone Avatar")
 			a.Team = self.ThisActor.Team;
 			a.Pos = self.ThisActor.Pos;
@@ -377,7 +377,7 @@ function do_update(self)
 		if self.ThisActor.PresetName == "Psyclone Avatar" then
 			for i = 1 , MovableMan:GetMOIDCount() - 1 do
 				local mo = MovableMan:GetMOFromID(i);
-				if mo ~= nil then
+				if mo ~= nil and math.random() < 0.35 then
 					if mo.RootID == self.ThisActor.ID  then
 						local glownum = math.floor(math.random(2) * self.FullPower / 6)
 					
