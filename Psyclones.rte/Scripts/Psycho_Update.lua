@@ -1,5 +1,8 @@
 function do_update(self)
 	if MovableMan:IsActor(self.ThisActor) then
+		local gibthisactor = false
+		local gibthreat = false;
+	
 		self.FullPower = Psyclones_GetFullPower(self.ThisActor, self.BasePower)
 		
 		-- Calculate effective skills distance
@@ -7,6 +10,9 @@ function do_update(self)
 
 		self.Threat = nil
 		self.NearestEnemyDist = 1000000
+		
+		local catalysts = 0
+		local inhibitors = 0
 		
 		-- Search for nearby actors 
 		for actor in MovableMan.Actors do
@@ -19,6 +25,10 @@ function do_update(self)
 						if d < self.EffectiveDistance then
 							local p = Psyclones_GetFullPower(actor, Psyclones_GetBasePower(actor))
 							self.FullPower = self.FullPower + (p * 0.30)
+							
+							if actor:HasObject("Smpl. #29 Psi Catalyst") then
+								catalysts = catalysts + 1
+							end
 						end
 					end
 				end
@@ -69,13 +79,22 @@ function do_update(self)
 									end
 								end
 							end -- if
+						end -- for
+						
+						if actor:HasObject("Smpl. #47 Psi Inhibitor") then
+							inhibitors = inhibitors + 1
 						end
-					end
-				end
-			end
+					end --if d <
+				end -- if not brain
+			end -- else
 		end
 		
-		self.FullPower = math.floor(self.FullPower)
+		-- Each friendly catalyst adds 20% of psi power
+		self.FullPower = self.FullPower + self.FullPower * (catalysts * 0.20)
+		-- Each enemy inhibitor removes 25% of psi power
+		self.FullPower = self.FullPower - self.FullPower * (inhibitors * 0.25)
+		
+		self.FullPower = math.ceil(self.FullPower)
 
 		-- Recalculate effective skills distance
 		self.EffectiveDistance = self.FullPower * self.DistPerPower;
@@ -87,26 +106,12 @@ function do_update(self)
 		
 		-- If we have target then use some skills on it
 		if MovableMan:IsActor(self.Threat) and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) then
-			local tosuccess = 1.0
-		
-			-- Calculate fail probability
-			-- Try to find helmet and increase fail probability
-			--[[for i = 1 , MovableMan:GetMOIDCount() - 1 do
-				local mo = MovableMan:GetMOFromID(i);
-				if mo.RootID == self.Threat.ID  then
-					if string.find(mo.PresetName, "Helmet") or string.find(mo.PresetName, "helmet") then
-						tosuccess = 0.65
-						break;
-					end
-				end
-			end -- Never used for now]]--
-		
 			-- Check for applicable skill from closest to farthest
 			-- Damage and gib
-			if self.Energy >= 50 and self.NearestEnemyDist < self.EffectiveDistance * 0.4 and self.FullPower > 10 then
+			if self.Energy >= 50 and self.NearestEnemyDist < self.EffectiveDistance * 0.4 and self.FullPower > 8 and self.DamageEnabled then
 				self.Energy = self.Energy - 50
 				
-				local dam = self.FullPower * 5
+				local dam = 0 ;--self.FullPower * 5
 				
 				-- Never kill a healthy actor from a single hit
 				if dam > 99 then
@@ -117,48 +122,23 @@ function do_update(self)
 					print ("Damage - "..tostring(math.ceil(self.FullPower)).." - "..tostring(math.ceil(dam)).." - "..self.Threat.PresetName)
 				end
 				
-				if self.Threat.Health <= dam then
-					local found = false
-				
-					-- Try to explode head or just gib otherwise
-					for i = 1 , MovableMan:GetMOIDCount() - 1 do
-						local mo = MovableMan:GetMOFromID(i);
-						if mo.RootID == self.Threat.ID  then
-							-- Find head
-							if string.find(mo.PresetName, "Head") or string.find(mo.PresetName, "head") then
-								local g = CreateTDExplosive("Head bomb")
-								if g ~= nil then
-									g.Pos = mo.Pos;
-									g.Scale = 0
-									g.HitsMOs = false;
-									g.GetsHitByMOs = false;
-									MovableMan:AddItem(g);
-									g:GibThis();
-									found = true
-									Psyclones_AddPsyEffect(mo.Pos)
-									break;
-								end
-							end
-						end
-					end
-					
-					if not found then
-						Psyclones_AddPsyEffect(self.Threat.Pos)
-						self.Threat:GibThis();
-					end
-				else
-					self.Threat.Health = self.Threat.Health - dam;
-					self.DamageThreat = self.Threat;
-					self.Threat:AddAbsImpulseForce(Vector(0, -2), Vector(0,0))
-					Psyclones_AddPsyEffect(self.Threat.Pos)
+				for i = 1, self.FullPower / 2.5 do
+					local pix = CreateMOPixel("Hit particle");
+					pix.Pos = self.Threat.Pos + Vector(-2 + math.random(4), -2 + math.random(4))
+					pix.Vel = Vector(-2 + math.random(4), -2 + math.random(4))
+					MovableMan:AddParticle(pix); 
 				end
+				
+				Psyclones_AddPsyEffect(self.Threat.Pos)
+				self.DamageThreat = self.Threat;
+				self.Threat:AddAbsImpulseForce(Vector(0, -4), Vector(0,0))
 				
 				Psyclones_AddPsyEffect(self.Pos)
 				self.CoolDownTimer:Reset();
 			end--]]--
 
 			-- Steal weapon
-			if self.Energy >= 40 and self.NearestEnemyDist < self.EffectiveDistance * 0.6 then
+			if self.Energy >= 40 and self.NearestEnemyDist < self.EffectiveDistance * 0.6 and self.StealEnabled then
 				if self.PrintSkills then
 					print ("Steal - "..tostring(math.ceil(self.FullPower)).." - "..self.Threat.PresetName)
 				end
@@ -194,12 +174,12 @@ function do_update(self)
 			end--]]--
 
 			-- Push target
-			if self.Energy >= 20 and self.NearestEnemyDist < self.EffectiveDistance * 0.8 then
-				local pow = 2 * self.FullPower
+			if self.Energy >= 20 and self.NearestEnemyDist < self.EffectiveDistance * 0.8 and self.PushEnabled then
+				local pow = 10 * self.FullPower
 			
-				if pow > 15 then
-					pow = 15
-				end
+				--if pow > 30 then
+				--	pow = 30
+				--end
 			
 				if self.PrintSkills then
 					print ("Push - "..tostring(math.ceil(self.FullPower)).." - "..tostring(math.ceil(pow)).." - "..self.Threat.PresetName)
@@ -216,7 +196,7 @@ function do_update(self)
 				--MovableMan:AddParticle(pix);
 				
 				-- Apply forces
-				self.Threat:AddAbsImpulseForce(Vector(math.cos(-angle) * (pow), math.sin(-angle) * (pow)), Vector(0,0))
+				self.Threat:AddAbsImpulseForce(Vector(math.cos(-angle) * pow, math.sin(-angle) * pow), Vector(0,0))
 				
 				--local pix = CreateMOPixel("Purple Glow 1");
 				--pix.Pos = pos
@@ -231,7 +211,7 @@ function do_update(self)
 			end--]]--
 
 			-- Scream to make actor drop it's items
-			if self.Energy >= 35 and self.NearestEnemyDist < self.EffectiveDistance * 0.9 then
+			if self.Energy >= 35 and self.NearestEnemyDist < self.EffectiveDistance * 0.9 and self.ScreamEnabled then
 				if self.PrintSkills then
 					print ("Scream - "..tostring(math.ceil(self.FullPower)).." - "..self.Threat.PresetName)
 				end
@@ -256,7 +236,7 @@ function do_update(self)
 			end--]]--
 			
 			-- Distort aiming
-			if self.Energy >= 10 then
+			if self.Energy >= 10 and self.DistortEnabled then
 				if self.PrintSkills then
 					print ("Distort - "..tostring(math.ceil(self.FullPower)).." - "..self.Threat.PresetName)
 				end
@@ -314,7 +294,7 @@ function do_update(self)
 				self.ThisActor.Health = self.ThisActor.Health - 1
 				
 				if self.ThisActor.Health < 1 then
-					self.ThisActor:GibThis()
+					gibthisactor = true					
 				end
 			end
 			
@@ -342,7 +322,7 @@ function do_update(self)
 			a.AIMode = Actor.AIMODE_SENTRY;
 			MovableMan:AddActor(a)
 			
-			self.ThisActor:GibThis();
+			gibthisactor = true
 		end
 		
 		if self.ThisActor.PresetName == "Psyclone Avatar" then
@@ -350,16 +330,34 @@ function do_update(self)
 				local mo = MovableMan:GetMOFromID(i);
 				if mo ~= nil then
 					if mo.RootID == self.ThisActor.ID  then
-						Psyclones_AddEffect(mo.Pos, "Purple Glow "..tostring(1 + (math.random(2) * 3)))
+						local glownum = math.floor(math.random(2) * self.FullPower / 6)
+					
+						if glownum > 10 then
+							glownum = 10
+						end
+						
+						if glownum >= 1 then
+							Psyclones_AddEffect(mo.Pos, "Purple Glow "..tostring(glownum))
+						end
 					end
 				end
 			end
 		end--]]--
 		
-		--if CF_DrawString ~= nil then
-			--CF_DrawString("E "..math.floor(self.Energy), self.Pos + Vector(0,-50), 200, 200)
-			--CF_DrawString("P "..self.FullPower, self.Pos + Vector(0,-40), 200, 200)
+		if CF_DrawString ~= nil then
+			CF_DrawString("E "..math.floor(self.Energy), self.Pos + Vector(0,-50), 200, 200)
+			CF_DrawString("P "..self.FullPower, self.Pos + Vector(0,-40), 200, 200)
 			--CF_DrawString("G "..glownum, self.Pos + Vector(0,-30), 100, 200)
-		--end
+		end
+		
+		if gibthisactor then
+			--self.ThisActor:GibThis();
+			self.ThisActor.Health = 0
+		end
+		
+		if gibthreat then
+			--self.Threat:GibThis();
+			self.ThisActor.Health = 0
+		end
 	end
 end

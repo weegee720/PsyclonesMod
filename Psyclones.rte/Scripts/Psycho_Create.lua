@@ -1,9 +1,16 @@
 function do_create(self)
 	-- Set up constants
-	self.DistPerPower = 40
+	self.DistPerPower = 400
 	self.CoolDownInterval = 2500
 	self.PrintSkills = true
 
+	self.DamageEnabled = true;
+	self.PushEnabled = false;
+	self.ScreamEnabled = false;
+	self.StealEnabled = false;
+	self.DistortEnabled = false;
+	self.RegenEnabled = false
+	
 	-- Find our owner actor
 	local found;
 	for i=1,MovableMan:GetMOIDCount()-1 do

@@ -155,6 +155,26 @@ CF_ItmTypes[factionid][i] = CF_WeaponTypes.SHIELD;
 CF_ItmPowers[factionid][i] = 1
 
 i = #CF_ItmNames[factionid] + 1
+CF_ItmNames[factionid][i] = "Smpl. #29 Psi Catalyst"
+CF_ItmPresets[factionid][i] = "Smpl. #29 Psi Catalyst"
+CF_ItmModules[factionid][i] = "Psyclones.rte"
+CF_ItmPrices[factionid][i] = 35
+CF_ItmDescriptions[factionid][i] = "Increases psi power of nearby friendly actors by 20%"
+CF_ItmUnlockData[factionid][i] = 1500
+CF_ItmTypes[factionid][i] = CF_WeaponTypes.DEVICE;
+CF_ItmPowers[factionid][i] = 1
+
+i = #CF_ItmNames[factionid] + 1
+CF_ItmNames[factionid][i] = "Smpl. #47 Psi Inhibitor"
+CF_ItmPresets[factionid][i] = "Smpl. #47 Psi Inhibitor"
+CF_ItmModules[factionid][i] = "Psyclones.rte"
+CF_ItmPrices[factionid][i] = 35
+CF_ItmDescriptions[factionid][i] = "Decreases psi power of nearby hostile actors by 25%"
+CF_ItmUnlockData[factionid][i] = 1500
+CF_ItmTypes[factionid][i] = CF_WeaponTypes.DEVICE;
+CF_ItmPowers[factionid][i] = 1
+
+i = #CF_ItmNames[factionid] + 1
 CF_ItmNames[factionid][i] = "XM-2 Pistol"
 CF_ItmPresets[factionid][i] = "XM-2 Pistol"
 CF_ItmModules[factionid][i] = "Psyclones.rte"
