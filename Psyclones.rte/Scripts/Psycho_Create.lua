@@ -109,9 +109,9 @@ end
 
 function Psyclones_GetBasePower(actor)
 	if actor.PresetName == "Psyclone Light" then
-		return 4
+		return 5
 	elseif actor.PresetName == "Psyclone Heavy" then
-		return 8
+		return 9
 	elseif actor.PresetName == "Psyclone Mastermind" then
 		return 20
 	elseif actor.PresetName == "Sarcophagus" then

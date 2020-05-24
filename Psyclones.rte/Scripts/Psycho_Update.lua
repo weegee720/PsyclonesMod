@@ -310,7 +310,7 @@ function do_update(self)
 							MovableMan:AddItem(newweap)
 							
 							local angle, d = Psyclones_GetAngle(self.Pos, weap.Pos)
-							local vel = Vector(-math.cos(-angle) * (3 * self.FullPower), -math.sin(-angle) * (3 * self.FullPower))
+							local vel = Vector(-math.cos(-angle) * (2 * self.FullPower), -math.sin(-angle) * (2 * self.FullPower))
 							
 							newweap.Vel = vel
 							

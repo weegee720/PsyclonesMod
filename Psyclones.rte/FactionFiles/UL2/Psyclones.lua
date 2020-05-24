@@ -202,12 +202,23 @@ i = #CF_ItmNames[factionid] + 1
 CF_ItmNames[factionid][i] = "XM-45 Brain Seeker Pod"
 CF_ItmPresets[factionid][i] = "XM-45 Brain Seeker Pod"
 CF_ItmModules[factionid][i] = "Psyclones.rte"
-CF_ItmPrices[factionid][i] = 75
+CF_ItmPrices[factionid][i] = 80
 CF_ItmDescriptions[factionid][i] = "An autonomous compact drone that will seek for enemy brain, revealing everything on it's way."
 CF_ItmUnlockData[factionid][i] = 1200
 CF_ItmClasses[factionid][i] = "TDExplosive"
 CF_ItmTypes[factionid][i] = CF_WeaponTypes.GRENADE;
 CF_ItmPowers[factionid][i] = 0
+
+i = #CF_ItmNames[factionid] + 1
+CF_ItmNames[factionid][i] = "XM-49 Seeker Pod"
+CF_ItmPresets[factionid][i] = "XM-49 Seeker Pod"
+CF_ItmModules[factionid][i] = "Psyclones.rte"
+CF_ItmPrices[factionid][i] = 60
+CF_ItmDescriptions[factionid][i] = "An autonomous compact drone that will seek for enemies and explode on approach."
+CF_ItmUnlockData[factionid][i] = 1400
+CF_ItmClasses[factionid][i] = "TDExplosive"
+CF_ItmTypes[factionid][i] = CF_WeaponTypes.GRENADE;
+CF_ItmPowers[factionid][i] = 8
 
 i = #CF_ItmNames[factionid] + 1
 CF_ItmNames[factionid][i] = "XM-2 Pistol"
