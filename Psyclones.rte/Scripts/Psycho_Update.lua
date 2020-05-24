@@ -12,6 +12,7 @@ function do_update(self)
 		local nearestenemydist = 1000000
 		local catalysts = 0
 		local inhibitors = 0
+		local dreadnoughtnearby = false;
 		
 		-- Search for nearby actors 
 		for actor in MovableMan.Actors do
@@ -27,6 +28,10 @@ function do_update(self)
 							
 							if actor:HasObject("Smpl. #29 Psi Catalyst") then
 								catalysts = catalysts + 1
+							end
+							
+							if actor.PresetName == "Sarcophagus" then
+								dreadnoughtnearby = true
 							end
 						end
 					end
@@ -67,6 +72,23 @@ function do_update(self)
 									end
 								end -- if
 							end -- for
+							
+							-- Disrupt crafts in range, no visibiliity needed
+							if self.ThisActor.PresetName == "Sarcophagus" then
+								if actor.ClassName == "ACDropShip" or actor.ClassName == "ACRocket" then
+									if actor.Pos.X < self.ThisActor.Pos.X then
+										actor:GetController():SetState(Controller.MOVE_LEFT, true)
+										actor:GetController():SetState(Controller.MOVE_RIGHT, false)
+										actor.Vel = actor.Vel + Vector(-0.25, 0)
+									else
+										actor:GetController():SetState(Controller.MOVE_RIGHT, true)
+										actor:GetController():SetState(Controller.MOVE_LEFT, false)
+										actor.Vel = actor.Vel + Vector(0.25, 0)
+									end
+									
+									Psyclones_AddEffect(actor.Pos, "Purple Glow 10")
+								end
+							end
 						end
 						
 						if actor:HasObject("Smpl. #47 Psi Inhibitor") then
@@ -91,7 +113,6 @@ function do_update(self)
 		if self.PrintSkills and MovableMan:IsActor(self.Threat) then
 			self.Threat:FlashWhite(25)
 		end
-
 
 		-- Check for applicable skill from closest to farthest
 		-- Teleport closest weapon
@@ -228,7 +249,7 @@ function do_update(self)
 				if weap ~= nil then
 					local newweap = Psyclones_MakeItem(weap.PresetName, weap.ClassName)
 					if newweap ~= nil then
-						newweap.Pos = weap.Pos;
+						newweap.Pos = Vector(weap.Pos.X, weap.Pos.Y);
 						MovableMan:AddItem(newweap)
 						
 						weap.ToDelete = true
@@ -262,7 +283,7 @@ function do_update(self)
 			self.AimDistortThreat = nil;
 		end
 
-		-- Fo distortion after damage
+		-- Do distortion after damage
 		if MovableMan:IsActor(self.DamageThreat) and not self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) then
 			self.DamageThreat:GetController():SetState(Controller.BODY_CROUCH, true)
 			self.DamageThreat:GetController():SetState(Controller.AIM_DOWN, true)
@@ -278,7 +299,11 @@ function do_update(self)
 		if self.Timer:IsPastSimMS(250) then
 			-- Add power
 			if self.Energy < 100 then
-				self.Energy = self.Energy + self.FullPower * 0.1
+				if dreadnoughtnearby then
+					self.Energy = self.Energy + self.FullPower
+				else
+					self.Energy = self.Energy + self.FullPower * 0.1
+				end
 				
 				if self.Energy > 100 then
 					self.Energy = 100
@@ -286,7 +311,7 @@ function do_update(self)
 			end
 			
 			-- Heal if there's no one nearby and we have enough power
-			if self.Threat == nil then
+			if self.Threat == nil and self.RegenEnabled then
 				if self.Energy >= 55 and self.ThisActor.Health < 100 and self.ThisActor.PresetName ~= "Psyclone Avatar" then
 					self.Energy = self.Energy - 5
 					self.ThisActor.Health = self.ThisActor.Health + 1
@@ -303,6 +328,13 @@ function do_update(self)
 			end
 			
 			self.Timer:Reset()
+		end
+		
+		-- Don't let dreadnought fall
+		if self.ThisActor.PresetName == "Sarcophagus" then
+			if self.ThisActor.Health > 0 then
+				self.ThisActor.RotAngle = 0
+			end
 		end
 		
 		-- Draw power marker

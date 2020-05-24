@@ -2,7 +2,7 @@ function do_create(self)
 	-- Set up constants
 	self.DistPerPower = 40
 	self.CoolDownInterval = 2500
-	self.PrintSkills = false;--true
+	self.PrintSkills = true
 
 	self.WeaponTeleportEnabled = true;
 	self.DamageEnabled = true;
@@ -12,9 +12,10 @@ function do_create(self)
 	self.DistortEnabled = true;
 	self.RegenEnabled = true;
 	
+	
 	-- Find our owner actor
 	local found;
-	for i=1,MovableMan:GetMOIDCount()-1 do
+	for i=1 , MovableMan:GetMOIDCount() - 1 do
 		local mo = MovableMan:GetMOFromID(i);
 		if mo.ID == self.RootID  then
 			found = mo;
@@ -26,6 +27,8 @@ function do_create(self)
 		-- Store actor for future use
 		if found.ClassName == "AHuman" then
 			self.ThisActor = ToAHuman(found)
+		elseif found.ClassName == "ACrab" then
+			self.ThisActor = ToACrab(found)
 		else
 			self.ThisActor = nil;
 		end
@@ -45,6 +48,19 @@ function do_create(self)
 			self.Energy = 100000;
 			self.Scale = 0;
 		end
+		
+		if self.ThisActor.PresetName == "Sarcophagus" then
+			self.CoolDownInterval = 750
+			self.Energy = 100000;
+
+			-- Sarcophagus can only do damage
+			self.WeaponTeleportEnabled = false;
+			self.PushEnabled = false;
+			self.ScreamEnabled = false;
+			self.StealEnabled = false;
+			self.DistortEnabled = false;
+			self.RegenEnabled = false;
+		end
 	else 
 		--print (self.ThisActor)
 	end
@@ -58,6 +74,8 @@ function Psyclones_GetBasePower(actor)
 	elseif actor.PresetName == "Psyclone Heavy" then
 		return 8
 	elseif actor.PresetName == "Psyclone Mastermind" then
+		return 20
+	elseif actor.PresetName == "Sarcophagus" then
 		return 20
 	elseif actor.PresetName == "Psyclone Avatar" then
 		return 30
