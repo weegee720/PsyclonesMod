@@ -4,12 +4,13 @@ function do_create(self)
 	self.CoolDownInterval = 2500
 	self.PrintSkills = true
 
+	self.WeaponTeleportEnabled = true;
 	self.DamageEnabled = true;
-	self.PushEnabled = false;
-	self.ScreamEnabled = false;
-	self.StealEnabled = false;
-	self.DistortEnabled = false;
-	self.RegenEnabled = false
+	self.PushEnabled = true;
+	self.ScreamEnabled = true;
+	self.StealEnabled = true;
+	self.DistortEnabled = true;
+	self.RegenEnabled = true;
 	
 	-- Find our owner actor
 	local found;
