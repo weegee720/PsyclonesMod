@@ -1,5 +1,5 @@
--- <Mod name here> <Mod URL here> by <Mod author here>
--- Faction file by <Faction file contributors here>
+-- Psyclones http://forums.datarealms.com/viewtopic.php?f=61&t=39729 by weegee
+-- Faction file by weegee
 -- 
 -- Unique Faction ID
 local factionid = "Psyclones";

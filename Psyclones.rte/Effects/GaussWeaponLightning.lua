@@ -4,7 +4,7 @@ function Create(self)
 
 	for i = 1,MovableMan:GetMOIDCount()-1 do
 		gun = MovableMan:GetMOFromID(i);
-		if (gun.PresetName == "Psi Lightning Orb") and gun.ClassName == "HDFirearm" and (gun.Pos-self.Pos).Magnitude < curdist then
+		if (gun.PresetName == "Smpl. #01 Psi Lightning Orb") and gun.ClassName == "HDFirearm" and (gun.Pos-self.Pos).Magnitude < curdist then
 			actor = MovableMan:GetMOFromID(gun.RootID);
 			if MovableMan:IsActor(actor) then
 				self.parent = ToActor(actor);
@@ -23,7 +23,7 @@ end
 
 function Update(self)
 
-if self.parent:IsDead() or not MovableMan:IsActor(self.parent) then
+if not MovableMan:IsActor(self.parent) or self.parent:IsDead() then
 	local soundfx = CreateAEmitter("Lightning Impact");
 	soundfx.Pos = self.Pos;
 	MovableMan:AddParticle(soundfx);
