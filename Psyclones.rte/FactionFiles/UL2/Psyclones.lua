@@ -58,10 +58,9 @@ CF_BrainPrices[factionid] = 500;
 CF_Crafts[factionid] = "Drop Ship MK1";
 CF_CraftModules[factionid] = "Base.rte";
 CF_CraftClasses[factionid] = "ACDropShip";
-CF_CraftPrices[factionid] = 120;
+CF_CraftPrices[factionid] = 300;
 
 -- Define superweapon script
---CF_SuperWeaponScripts[factionid] = "UnmappedLands2.rte/SuperWeapons/Bombing.lua"
 CF_SuperWeaponScripts[factionid] = "Psyclones.rte/FactionFiles/UL2/Superweapon/Psyclones_Bombing.lua"
 
 -- Define default tactical AI model
@@ -250,16 +249,6 @@ CF_ItmTypes[factionid][i] = CF_WeaponTypes.PISTOL;
 CF_ItmPowers[factionid][i] = 4
 
 i = #CF_ItmNames[factionid] + 1
-CF_ItmNames[factionid][i] = "Smpl. #01 Psi Lightning Orb"
-CF_ItmPresets[factionid][i] = "Smpl. #01 Psi Lightning Orb"
-CF_ItmModules[factionid][i] = "Psyclones.rte"
-CF_ItmPrices[factionid][i] = 50
-CF_ItmDescriptions[factionid][i] = "An alien device of unknown origin. Compact, light and capable of delivering enough damage."
-CF_ItmUnlockData[factionid][i] = 500
-CF_ItmTypes[factionid][i] = CF_WeaponTypes.PISTOL;
-CF_ItmPowers[factionid][i] = 6
-
-i = #CF_ItmNames[factionid] + 1
 CF_ItmNames[factionid][i] = "XM-10 Submachine Gun"
 CF_ItmPresets[factionid][i] = "XM-10 Submachine Gun"
 CF_ItmModules[factionid][i] = "Psyclones.rte"
@@ -318,7 +307,7 @@ if CF_BombNames ~= nil then
 	CF_BombModules[n] = "Psyclones.rte"
 	CF_BombClasses[n] = "TDExplosive"
 	CF_BombPrices[n] = 70
-	CF_BombDescriptions[n] = " An autonomous, dropship deployable compact drone that will seek for enemies and explode on approach."
+	CF_BombDescriptions[n] = " An autonomous, drop ship deployable compact drone that will seek for enemies and explode on approach."
 	CF_BombOwnerFactions[n] = {"Psyclones"}
 	CF_BombUnlockData[n] = 1200
 
@@ -328,7 +317,7 @@ if CF_BombNames ~= nil then
 	CF_BombModules[n] = "Psyclones.rte"
 	CF_BombClasses[n] = "TDExplosive"
 	CF_BombPrices[n] = 100
-	CF_BombDescriptions[n] = "An autonomous, dropship deployable compact mine that will seek for incoming crafts and explode on approach."
+	CF_BombDescriptions[n] = "An autonomous, drop ship deployable compact mine that will seek for incoming crafts and explode on approach."
 	CF_BombOwnerFactions[n] = {"Psyclones"}
 	CF_BombUnlockData[n] = 1600
 end

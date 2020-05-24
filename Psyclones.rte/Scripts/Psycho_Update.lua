@@ -145,7 +145,7 @@ function do_update(self)
 					end
 				end
 			else
-				if not actor:IsInGroup("Brains") and actor.Health > 0 then
+				if not actor:IsInGroup("Brains") and actor.Health > 0 and actor.ClassName ~= "ADoor" and actor.ClassName ~= "Actor" then
 					-- Search for enemies to find threat
 					local d = SceneMan:ShortestDistance(actor.Pos, self.ThisActor.Pos, true).Magnitude;
 					
@@ -224,16 +224,17 @@ function do_update(self)
 
 		-- Check for applicable skill from closest to farthest
 		-- Teleport closest weapon
+		--print (self.Energy >= self.WeaponTeleportCost and self.WeaponTeleportEnabled and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) and self.ThisActor.EquippedItem == nil)
+		
 		if self.Energy >= self.WeaponTeleportCost and self.WeaponTeleportEnabled and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) and self.ThisActor.EquippedItem == nil then
 			local nearestitmdist = 1000000
 			local nearestitem = nil
 
 			-- Find nearest weapon
 			for itm in MovableMan.Items do
-				if itm.ClassName == "HDFirearm" and itm.HitsMOs ~= false then
+				if itm.ClassName == "HDFirearm" and itm.GetsHitByMOs ~= false then
 					local d = SceneMan:ShortestDistance(itm.Pos, self.ThisActor.Pos, true).Magnitude;
-					
-					if d < self.EffectiveDistance and d < nearestitmdist then
+					if d < 100 + self.EffectiveDistance and d < nearestitmdist then
 						nearestitem = itm
 						nearestenemydist = d;
 					end --if d <
@@ -250,7 +251,7 @@ function do_update(self)
 				Psyclones_AddPsyEffect(self.Pos)
 				Psyclones_AddPsyEffect(nearestitem.Pos)
 				
-				local newitem = CreateHDFirearm(nearestitem.PresetName)
+				local newitem = CreateHDFirearm(nearestitem:GetModuleAndPresetName())
 				if newitem ~= nil then
 					self.ThisActor:AddInventoryItem(newitem)
 					nearestitem.ToDelete = true
@@ -293,7 +294,7 @@ function do_update(self)
 				local weap = self.Threat.EquippedItem;
 
 				if weap ~= nil then
-					local newweap = Psyclones_MakeItem(weap.PresetName, weap.ClassName)
+					local newweap = Psyclones_MakeItem(weap:GetModuleAndPresetName(), weap.ClassName)
 					if newweap ~= nil then
 						if self.PrintSkills then
 							print ("Steal - "..tostring(math.ceil(self.FullPower)).." - "..self.Threat.PresetName)
@@ -358,7 +359,7 @@ function do_update(self)
 				local weap = self.Threat.EquippedItem;
 
 				if weap ~= nil then
-					local newweap = Psyclones_MakeItem(weap.PresetName, weap.ClassName)
+					local newweap = Psyclones_MakeItem(weap:GetModuleAndPresetName(), weap.ClassName)
 					if newweap ~= nil then
 						newweap.Pos = Vector(weap.Pos.X, weap.Pos.Y);
 						MovableMan:AddItem(newweap)
@@ -384,7 +385,7 @@ function do_update(self)
 		end
 		
 		-- Do distortion
-		if MovableMan:IsActor(self.AimDistortThreat) and not self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) then
+		if MovableMan:IsActor(self.AimDistortThreat) and not self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval / 4) then
 			self.AimDistortThreat:GetController():SetState(Controller.AIM_UP, true)
 			
 			if self.AimDistortThreat:GetAimAngle(false) < 0.75 then
@@ -395,7 +396,7 @@ function do_update(self)
 		end
 
 		-- Do distortion after damage
-		if MovableMan:IsActor(self.DamageThreat) and not self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) then
+		if MovableMan:IsActor(self.DamageThreat) and not self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval / 4) then
 			if self.DamageDistortEnabled then
 				self.DamageThreat:GetController():SetState(Controller.BODY_CROUCH, true)
 				self.DamageThreat:GetController():SetState(Controller.AIM_DOWN, true)
@@ -464,27 +465,67 @@ function do_update(self)
 		end
 		
 		-- Spawn avatar if we're dying
-		if math.random() < 0.1 and self.ThisActor.Health <= 0 and self.ThisActor.PresetName ~= "Psyclone Avatar" and self.ThisActor.PresetName ~= "Sarcophagus" then
+		if math.random() < 1.1 and self.ThisActor.Health <= 0 and self.ThisActor.PresetName ~= "Psyclone Avatar" and self.ThisActor.PresetName ~= "Sarcophagus" then
 			local a = CreateAHuman("Psyclone Avatar")
-			a.Team = self.ThisActor.Team;
-			a.Pos = self.ThisActor.Pos;
-			a.AIMode = self.ThisActor.AIMode;
-			if a.AIMode == Actor.AIMODE_GOTO then
-				local wp = self.ThisActor:GetLastAIWaypoint()
-				a:AddAISceneWaypoint(wp)
-			end
+			if a then
+				a.Team = self.ThisActor.Team;
+				a.Pos = self.ThisActor.Pos;
+				a.AIMode = self.ThisActor.AIMode;
+				if a.AIMode == Actor.AIMODE_GOTO then
+					local wp = self.ThisActor:GetLastAIWaypoint()
+					a:AddAISceneWaypoint(wp)
+				end
+				
+				-- Find nearest weapon to give it to avatar on spawn
+				local nearestitmdist = 1000000
+				local nearestitem = nil
 
-			MovableMan:AddActor(a)
-			
-			local eff = CreateMOSRotating("Avatar effect")
-			if eff ~= nil then
-				eff.Pos = a.Pos
-				MovableMan:AddParticle(eff)
-				eff:GibThis()
+				-- Find nearest weapon
+				for itm in MovableMan.Items do
+					if itm.ClassName == "HDFirearm" and itm.GetsHitByMOs ~= false then
+						local d = SceneMan:ShortestDistance(itm.Pos, self.ThisActor.Pos, true).Magnitude;
+						if d < 150 and d < nearestitmdist then
+							nearestitem = itm
+							nearestenemydist = d;
+						end --if d <
+					end
+				end
+					
+				-- Teleport weapon
+				if nearestitem ~= nil then
+					Psyclones_AddPsyEffect(a.Pos)
+					Psyclones_AddPsyEffect(nearestitem.Pos)
+					
+					local newitem = CreateHDFirearm(nearestitem:GetModuleAndPresetName())
+					if newitem ~= nil then
+						a:AddInventoryItem(newitem)
+						nearestitem.ToDelete = true
+						-- This item will be teleported only on the next sim update, we need to move it far away to avoid grabbing by other psyclones
+						nearestitem.Pos = Vector(0,25000)
+					end--]]--
+				end
+
+				MovableMan:AddActor(a)
+				
+				local eff = CreateMOSRotating("Avatar effect")
+				if eff ~= nil then
+					eff.Pos = a.Pos
+					MovableMan:AddParticle(eff)
+					eff:GibThis()
+				end
+				
+				-- Switch to avatar if it was player controlled
+				if self.ThisActor:IsPlayerControlled() then
+					local player = self.ThisActor:GetController().Player
+					if player > -1 then
+						local activity = ToGameActivity(ActivityMan:GetActivity())
+						activity:SwitchToActor(a, player, activity:GetTeamOfPlayer(player));
+					end
+				end
+				
+				gibthisactor = true
+				self.ThisActor.ToDelete = true;
 			end
-			
-			gibthisactor = true
-			self.ThisActor.ToDelete = true;
 		end
 		
 		if self.ThisActor.PresetName == "Psyclone Avatar" then

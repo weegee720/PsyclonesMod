@@ -14,7 +14,7 @@ function do_create(self)
 	self.RegenEnabled = true;
 	self.ShieldEnabled = false;
 
-	self.WeaponTeleportCost = 15;
+	self.WeaponTeleportCost = 1;
 	self.DamageCost = 65;
 	self.PushCost = 15;
 	self.ScreamCost = 25;
