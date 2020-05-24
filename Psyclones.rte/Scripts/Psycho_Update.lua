@@ -207,10 +207,14 @@ function do_update(self)
 			end -- else
 		end
 		
-		-- Each friendly catalyst adds 20% of psi power
-		self.FullPower = self.FullPower + self.FullPower * (catalysts * 0.20)
-		-- Each enemy inhibitor removes 25% of psi power
-		self.FullPower = self.FullPower - self.FullPower * (inhibitors * 0.25)
+		-- Each friendly catalyst adds 100% of psi power
+		self.FullPower = self.FullPower + self.FullPower * (catalysts * 1.0)
+		-- Each enemy inhibitor removes 200% of psi power
+		self.FullPower = self.FullPower - self.FullPower * (inhibitors * 2.0)
+		
+		if self.FullPower < 0 then
+			self.FullPower = 0
+		end
 		
 		self.FullPower = math.ceil(self.FullPower)
 
@@ -466,7 +470,7 @@ function do_update(self)
 		
 		-- Spawn avatar if we're dying
 		if math.random() < 1.1 and self.ThisActor.Health <= 0 and self.ThisActor.PresetName ~= "Psyclone Avatar" and self.ThisActor.PresetName ~= "Sarcophagus" then
-			local a = CreateAHuman("Psyclone Avatar")
+			local a = CreateAHuman("Psyclone Avatar", "Psyclones.rte")
 			if a then
 				a.Team = self.ThisActor.Team;
 				a.Pos = self.ThisActor.Pos;

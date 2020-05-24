@@ -30,7 +30,7 @@ function Update(self)
 					if mo.RootID == actor.ID  then
 						if math.random(self.maxCharge) < self.chargeCounter then
 							local glownum = math.random(self.chargeCounter)
-							local pix = CreateMOPixel("Purple Glow "..tostring(glownum));
+							local pix = CreateMOPixel("Purple Glow "..tostring(glownum), "Psyclones.rte");
 							pix.Pos = mo.Pos
 							MovableMan:AddParticle(pix);
 						end
@@ -49,7 +49,7 @@ function Update(self)
 
 		local actor = MovableMan:GetMOFromID(self.RootID);
 
-		local damagePar = CreateAEmitter("Wormhole Shot");
+		local damagePar = CreateAEmitter("Wormhole Shot", "Psyclones.rte");
 		damagePar.Pos = self.MuzzlePos + Vector(self.reverseNum,0):RadRotate(self.RotAngle);
 		damagePar.Vel = Vector(5*self.reverseNum,0):RadRotate(self.RotAngle);
 		damagePar:SetWhichMOToNotHit(MovableMan:GetMOFromID(self.RootID),-1);

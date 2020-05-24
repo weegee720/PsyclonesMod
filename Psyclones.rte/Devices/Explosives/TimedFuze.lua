@@ -8,7 +8,7 @@ function Update(self)
 				
 				local pos = self.Pos + Vector(math.cos(angle) * 60, math.sin(angle) * 60);
 				if SceneMan:GetTerrMatter(pos.X, pos.Y) == 0 then
-					local damagePar = CreateMOPixel("Wormhole Emission Particle "..math.random(2));
+					local damagePar = CreateMOPixel("Wormhole Emission Particle "..math.random(2), "Psyclones.rte");
 					
 					damagePar.Pos = pos;
 					damagePar.Vel = Vector(-(math.cos(angle) * 60), -(math.sin(angle) * 60));
@@ -19,13 +19,13 @@ function Update(self)
 			end
 		end
 	
-		local pix = CreateMOPixel("Purple Glow ".. math.random(21));
+		local pix = CreateMOPixel("Purple Glow ".. math.random(21), "Psyclones.rte");
 		pix.Pos = self.Pos
 		MovableMan:AddParticle(pix);
 		
 		if self.Fuze:IsPastSimMS(4000) or self.BlowNow then
 			for i = 1, 2 do 
-				local pix = CreateMOSRotating("Terrain Eat Explosion");
+				local pix = CreateMOSRotating("Terrain Eat Explosion", "Psyclones.rte");
 				if pix then
 					pix.Pos = self.Pos
 					MovableMan:AddParticle(pix);
