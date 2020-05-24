@@ -11,6 +11,7 @@ function do_create(self)
 	self.StealEnabled = true;
 	self.DistortEnabled = true;
 	self.RegenEnabled = true;
+	self.ShieldEnabled = false;
 
 	self.WeaponTeleportCost = 15;
 	self.DamageCost = 45;
@@ -19,6 +20,7 @@ function do_create(self)
 	self.StealCost = 30;
 	self.DistortCost = 10;
 	self.RegenCost = 3;
+
 	
 	-- Find our owner actor
 	local found;
@@ -62,28 +64,43 @@ function do_create(self)
 		
 		
 		if self.ThisActor.PresetName == "Sarcophagus" then
-			self.CoolDownInterval = 750
+			self.CoolDownInterval = 2000
 			self.Energy = 100000;
 
-			-- Sarcophagus can only do damage
+			-- Sarcophagus can only do damage and shield
 			self.WeaponTeleportEnabled = false;
+			self.DamageEnabled = true;
 			self.PushEnabled = false;
 			self.ScreamEnabled = false;
 			self.StealEnabled = false;
 			self.DistortEnabled = false;
 			self.RegenEnabled = false;
-			
+			self.ShieldEnabled = true;
+		end
+		
+		
+		if self.ShieldEnabled then
+			-- Shield variables
 			if G_Shields == nil then
 				G_Shields = {}
 			end
 			if G_Active == nil then
 				G_Active = {}
 			end
+			if G_Pressure == nil then
+				G_Pressure = {}
+			end
+			if G_Timer == nil then
+				G_Timer = Timer()
+				G_ThisFrameTime = 0
+			end
+			
+			G_ShieldRadius = 160
+			G_MinVelocity = 10
 			
 			G_Shields[#G_Shields + 1] = self.ThisActor
 			G_Active[#G_Shields] = true
-			
-			print (#G_Shields)
+			G_Pressure[#G_Shields] = 0
 		end
 	else 
 		--print (self.ThisActor)

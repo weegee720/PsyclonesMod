@@ -1,49 +1,91 @@
 function do_shield()
-	local maxparticles = 100
-	local minspeed = 10
-	local radius = 200
-	local momentum = 0
+	local radius = 0
 	local dist = 0
+	local glownum =0
+	local s;
+	local pr;
+
+	local rads = {}
+	local shields = {}
+	local active = {}
+	local pressure = {}
+	local n = 0
+	
+	for i = 1, #G_Active do
+		if G_Active[i] and MovableMan:IsActor(G_Shields[i]) and G_Shields[i].Health > 0 and G_Shields[i].PresetName == "Sarcophagus" then
+			n = #shields + 1
+		
+			shields[n] = G_Shields[i]
+			active[n] = true
+			rads[n] = G_ShieldRadius * G_Shields[i].Health / 100 - G_Pressure[i] / 10
+			
+			if rads[n] < 0 then
+				rads[n] = 0
+			end
+			
+			if G_Pressure[i] > 7 then
+				for i = 1, 4 do
+					local a = math.random(360) / (180 / 3.14)
+					local pos = shields[n].Pos + Vector(math.cos(a) * rads[n], math.sin(a) * rads[n])
+					if SceneMan:GetTerrMatter(pos.X, pos.Y) == 0 then
+						Psyclones_AddEffect(pos, "Purple Glow 1")
+					end
+				end
+			end
+
+			pressure[n] = G_Pressure[i] - G_Pressure[i] * 0.050
+			if pressure[n] < 0 then
+				pressure[n] = 0
+			end
+			
+			--CF_DrawString(tostring(math.ceil(G_Pressure[i])), shields[n].Pos + Vector(0,-50), 200, 200)
+		else
+			G_Active[i] = false;
+		end
+	end
+
+	G_Shields = shields;
+	G_Active = active;
+	G_Pressure = pressure;
 	
 	for p in MovableMan.Particles do
-	
-		if p.HitsMOs and p.Vel.Magnitude >= minspeed then
+		if p.HitsMOs and p.Vel.Magnitude >= G_MinVelocity then
 			for i = 1, #G_Shields do
-				if G_Active[i] and MovableMan:IsActor(G_Shields[i]) and G_Shields[i].Health > 0 then
+				s = G_Shields[i]
+				pr = G_Pressure[i]
+			
+				if G_Active[i] then
 					if G_Shields[i].Team ~= p.Team then
-						dist = SceneMan:ShortestDistance(G_Shields[i].Pos , p.Pos,true).Magnitude
+						dist = SceneMan:ShortestDistance(s.Pos , p.Pos,true).Magnitude
+						
+						radius = rads[i]
 					
 						if dist <= radius and dist > radius * 0.5 then
-							--if dist > radius * 0.98 then
-								Psyclones_AddPsyEffect(p.Pos)
-							--end
+							pr = pr + (p.Mass * p.Vel.Magnitude)
+						
+							if math.random(2) == 1 then
+								glownum = math.floor(p.Vel.Magnitude / 5)
 							
-							--local coeff = 5 / p.Mass;
-							
-							--print (coeff)
-							
+								if glownum > 20 then
+									glownum = 20
+								end
+								
+								if glownum >= 1 then
+									Psyclones_AddEffect(p.Pos, "Purple Glow "..tostring(glownum))
+								end
+							end
+						
 							p.Vel = p.Vel - Vector(p.Vel.X * 0.45, p.Vel.Y * 0.45)
 						end
 					end
 				else
 					G_Active[i] = false
 				end
+				
+				G_Pressure[i] = pr
 			end
 		end
 	end
-		
-	local shields = {}
-	local active = {}
-	
-	for i = 1, #G_Active do
-		if G_Active[i] then
-			shields[#shields + 1] = G_Shields[i]
-			active[#shields] = true
-		end
-	end
-
-	G_Shields = shields;
-	G_Active = active;
 end
 
 function do_update(self)
@@ -53,17 +95,17 @@ function do_update(self)
 	end
 	
 	if G_Shields ~= nil then
-		do_shield()
-	end
-	
-	--[[if G_Shields ~= nil then
-		if G_ShieldCoroutine == nil then
-			G_ShieldCoroutine = coroutine.create(do_shield)
-			coroutine.resume(G_ShieldCoroutine)
+		-- Timers are updated on every sim update
+		-- so to find out if it's first run during this sim update we just
+		-- get current timer value
+		if G_ThisFrameTime ~= G_Timer.ElapsedSimTimeMS then
+			G_ThisFrameTime = G_Timer.ElapsedSimTimeMS;
+			do_shield()
+			--print ("Do "..G_Timer.ElapsedSimTimeMS)
 		else
-			coroutine.resume(G_ShieldCoroutine)
+			--print ("Skip "..G_Timer.ElapsedSimTimeMS)
 		end
-	end]]--
+	end
 
 	if MovableMan:IsActor(self.ThisActor) then
 		local gibthisactor = false
@@ -417,7 +459,7 @@ function do_update(self)
 		end
 		
 		-- Spawn avatar if we're dying
-		if math.random() < 0.1 and self.ThisActor.Health <= 0 and self.ThisActor.PresetName ~= "Psyclone Avatar" then
+		if math.random() < 0.1 and self.ThisActor.Health <= 0 and self.ThisActor.PresetName ~= "Psyclone Avatar" and self.ThisActor.PresetName ~= "Sarcophagus" then
 			local a = CreateAHuman("Psyclone Avatar")
 			a.Team = self.ThisActor.Team;
 			a.Pos = self.ThisActor.Pos;
