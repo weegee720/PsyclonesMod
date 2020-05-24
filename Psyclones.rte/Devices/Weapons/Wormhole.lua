@@ -7,12 +7,12 @@ end
 
 function Update(self)
 	if self:IsActivated() then
-		if self.fireTimer:IsPastSimMS(200) then
+		if self.fireTimer:IsPastSimMS(100) then
 			self.chargeCounter = self.chargeCounter + 1
 			self.fireTimer:Reset();
 		end
 	else
-		if self.fireTimer:IsPastSimMS(200) and self.chargeCounter > 0 then
+		if self.fireTimer:IsPastSimMS(100) and self.chargeCounter > 0 then
 			self.chargeCounter = self.chargeCounter - 4
 			if self.chargeCounter < 0 then
 				self.chargeCounter = 0

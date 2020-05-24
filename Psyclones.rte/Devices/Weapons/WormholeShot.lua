@@ -29,7 +29,7 @@ function Update(self)
 	pix.Pos = self.Pos - (self.Vel * 3)
 	MovableMan:AddParticle(pix);
 
-	if self.lifeTimer:IsPastSimMS(1000) then
+	--[[if self.lifeTimer:IsPastSimMS(1000) then
 		local pix = CreateMOPixel("Purple Glow ".. math.random(15));
 		pix.Pos = self.Pos - (self.Vel * 4)
 		MovableMan:AddParticle(pix);
@@ -57,7 +57,7 @@ function Update(self)
 		local pix = CreateMOPixel("Purple Glow ".. math.random(3));
 		pix.Pos = self.Pos - (self.Vel * 8)
 		MovableMan:AddParticle(pix);
-	end
+	end--]]--
 	
 	if self.lifeTimer:IsPastSimMS(5500) then
 		for i = -1, 1 do
