@@ -90,7 +90,7 @@ end
 
 function do_update(self)
 	-- Don't do anything when in edit mode
-	if ActivityMan:GetActivity().ActivityState == Activity.EDITING then
+	if ActivityMan:GetActivity().ActivityState ~= Activity.RUNNING then
 		return
 	end
 	

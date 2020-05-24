@@ -95,7 +95,7 @@ CF_ActPresets[factionid][i] = "Psyclone Heavy"
 CF_ActModules[factionid][i] = "Psyclones.rte"
 CF_ActPrices[factionid][i] = 150
 CF_ActDescriptions[factionid][i] = "A heavy unit with well developed psi-abilities and quick reflexes. Nearby units amplify each-other's psi-abilities."
-CF_ActUnlockData[factionid][i] = 2500
+CF_ActUnlockData[factionid][i] = 1750
 CF_ActTypes[factionid][i] = CF_ActorTypes.HEAVY;
 CF_ActPowers[factionid][i] = 6
 
@@ -105,7 +105,7 @@ CF_ActPresets[factionid][i] = "Sarcophagus"
 CF_ActModules[factionid][i] = "Psyclones.rte"
 CF_ActPrices[factionid][i] = 400
 CF_ActDescriptions[factionid][i] = "Psi-power of this psyclone is so enormous that he must be contained in special sarcophagus. He can damage units, deflect incoming projectiles and move dropships away."
-CF_ActUnlockData[factionid][i] = 2500
+CF_ActUnlockData[factionid][i] = 3000
 CF_ActClasses[factionid][i] = "ACrab";
 CF_ActTypes[factionid][i] = CF_ActorTypes.ARMOR;
 CF_ActPowers[factionid][i] = 8
@@ -238,6 +238,16 @@ CF_ItmDescriptions[factionid][i] = "Experimental energy based sub machine gun wi
 CF_ItmUnlockData[factionid][i] = 0
 CF_ItmTypes[factionid][i] = CF_WeaponTypes.RIFLE;
 CF_ItmPowers[factionid][i] = 4
+
+i = #CF_ItmNames[factionid] + 1
+CF_ItmNames[factionid][i] = "XM-11 Machine Gun"
+CF_ItmPresets[factionid][i] = "XM-11 Machine Gun"
+CF_ItmModules[factionid][i] = "Psyclones.rte"
+CF_ItmPrices[factionid][i] = 120
+CF_ItmDescriptions[factionid][i] = "Perspective energy based light machine gun developed as a replacement of standard assault rifle."
+CF_ItmUnlockData[factionid][i] = 800
+CF_ItmTypes[factionid][i] = CF_WeaponTypes.RIFLE;
+CF_ItmPowers[factionid][i] = 6
 
 i = #CF_ItmNames[factionid] + 1
 CF_ItmNames[factionid][i] = "XM-92B Heavy Sniper"
