@@ -12,7 +12,7 @@ CF_ActorSets[factionid] = {"Psyclone Light" , "Psyclone Heavy"};
 
 CF_Probabilities[factionid] = {0.75 , 0.30 , 0.25 , 0.25};
 
-CF_ArmorCrabs[factionid] = nil
+CF_ArmorCrabs[factionid] = {"Sarcophagus"}
 CF_ArmorHumans[factionid] = nil
 
 print ("Load complete "..factionid)

@@ -95,7 +95,7 @@ function do_create(self)
 				G_ThisFrameTime = 0
 			end
 			
-			G_ShieldRadius = 160
+			G_ShieldRadius = 180
 			G_MinVelocity = 10
 			
 			G_Shields[#G_Shields + 1] = self.ThisActor

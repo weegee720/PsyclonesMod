@@ -254,7 +254,10 @@ function do_update(self)
 				if newitem ~= nil then
 					self.ThisActor:AddInventoryItem(newitem)
 					nearestitem.ToDelete = true
-				end
+					-- This item will be teleported only on the next sim update, we need to move it far away to avoid grabbing by other psyclones
+					nearestitem.Pos = Vector(0,25000)
+				end--]]--
+				--self.ThisActor:AddInventoryItem(nearestitem)
 				self.CoolDownTimer:Reset();
 			end
 		end

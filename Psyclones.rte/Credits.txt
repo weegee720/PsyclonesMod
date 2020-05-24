@@ -1,3 +1,4 @@
 Weegee - Scripting, Ideas
-DudeAbides - Sprites, Visual design
+DudeAbides - Sprites, Visual design, Weapons
+4zK - Sprites
 Bad Boy, Gotcha! - Testing, Suggestions
