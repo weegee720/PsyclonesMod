@@ -16,6 +16,8 @@ function Create(self)
 	end
 	
 	if brain ~= nil then
+		--print (brain)
+		--print (nearestenemydist)
 		self.alliedTeam = brain.Team;
 	end
 end
