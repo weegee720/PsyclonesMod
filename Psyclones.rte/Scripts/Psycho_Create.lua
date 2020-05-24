@@ -22,18 +22,24 @@ function do_create(self)
 			self.ThisActor = nil;
 		end
 	end
+
+	self.Energy = 100;
+	self.Timer = Timer();
+	self.CoolDownTimer = Timer()
 	
 	if self.ThisActor then
 		-- Calculate actor base power
 		self.BasePower = Psyclones_GetBasePower(self.ThisActor);
 		--print(self.BasePower)
+		
+		if self.ThisActor.PresetName == "Psyclone Avatar" then
+			self.CoolDownInterval = 1500
+			self.Energy = 100000;
+			--self.Scale = 0;
+		end
 	else 
 		--print (self.ThisActor)
 	end
-	
-	self.Energy = 100;
-	self.Timer = Timer();
-	self.CoolDownTimer = Timer()
 end
 
 function Psyclones_GetBasePower(actor)
@@ -45,6 +51,8 @@ function Psyclones_GetBasePower(actor)
 		return 8
 	elseif actor.PresetName == "Psyclone Mastermind" then
 		return 20
+	elseif actor.PresetName == "Psyclone Avatar" then
+		return 30
 	end
 	
 	return 0;

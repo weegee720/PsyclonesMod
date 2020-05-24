@@ -12,12 +12,14 @@ function do_update(self)
 		for actor in MovableMan.Actors do
 			-- Search for friends to amplify power
 			if actor.Team == self.ThisActor.Team then
-				if actor.Pos.X ~= self.ThisActor.Pos.X or actor.Pos.Y ~= self.ThisActor.Pos.Y then
-					local d = SceneMan:ShortestDistance(actor.Pos, self.ThisActor.Pos, true).Magnitude;
-					
-					if d < self.EffectiveDistance then
-						local p = Psyclones_GetFullPower(actor, Psyclones_GetBasePower(actor))
-						self.FullPower = self.FullPower + (p * 0.30)
+				if self.ThisActor.PresetName ~= "Psyclone Avatar" and actor.PresetName ~= "Psyclone Avatar" then
+					if actor.Pos.X ~= self.ThisActor.Pos.X or actor.Pos.Y ~= self.ThisActor.Pos.Y then
+						local d = SceneMan:ShortestDistance(actor.Pos, self.ThisActor.Pos, true).Magnitude;
+						
+						if d < self.EffectiveDistance then
+							local p = Psyclones_GetFullPower(actor, Psyclones_GetBasePower(actor))
+							self.FullPower = self.FullPower + (p * 0.30)
+						end
 					end
 				end
 			else
@@ -301,9 +303,18 @@ function do_update(self)
 			
 			-- Heal if there's no one nearby and we have enough power
 			if self.Threat == nil then
-				if self.Energy >= 55 and self.ThisActor.Health < 100 then
+				if self.Energy >= 55 and self.ThisActor.Health < 100 and self.ThisActor.PresetName ~= "Psyclone Avatar" then
 					self.Energy = self.Energy - 5
 					self.ThisActor.Health = self.ThisActor.Health + 1
+				end
+			end
+			
+			-- Reduce health if it's avatar
+			if self.ThisActor.PresetName == "Psyclone Avatar" then
+				self.ThisActor.Health = self.ThisActor.Health - 1
+				
+				if self.ThisActor.Health < 1 then
+					self.ThisActor:GibThis()
 				end
 			end
 			
@@ -322,6 +333,28 @@ function do_update(self)
 			pix.Pos = self.Pos
 			MovableMan:AddParticle(pix);
 		end
+		
+		-- Spawn avatar if we're dying
+		if self.ThisActor.Health <= 0 and self.ThisActor.PresetName ~= "Psyclone Avatar" then
+			local a = CreateAHuman("Psyclone Avatar")
+			a.Team = self.ThisActor.Team;
+			a.Pos = self.ThisActor.Pos;
+			a.AIMode = Actor.AIMODE_SENTRY;
+			MovableMan:AddActor(a)
+			
+			self.ThisActor:GibThis();
+		end
+		
+		if self.ThisActor.PresetName == "Psyclone Avatar" then
+			for i = 1 , MovableMan:GetMOIDCount() - 1 do
+				local mo = MovableMan:GetMOFromID(i);
+				if mo ~= nil then
+					if mo.RootID == self.ThisActor.ID  then
+						Psyclones_AddEffect(mo.Pos, "Purple Glow "..tostring(1 + (math.random(2) * 3)))
+					end
+				end
+			end
+		end--]]--
 		
 		--if CF_DrawString ~= nil then
 			--CF_DrawString("E "..math.floor(self.Energy), self.Pos + Vector(0,-50), 200, 200)
