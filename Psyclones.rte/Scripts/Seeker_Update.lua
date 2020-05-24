@@ -21,11 +21,15 @@ function do_update_seeker(self)
 			end
 			
 			if brain ~= nil then
-				self.ThisActor.AIMode = Actor.AIMODE_GOTO;			
-				self.ThisActor:ClearAIWaypoints()
-				self.ThisActor:AddAISceneWaypoint(brain.Pos)
-				
-				self.Target = brain
+				if nearestenemydist > self.SeekRange then
+					boom = true
+				else
+					self.ThisActor.AIMode = Actor.AIMODE_GOTO;			
+					self.ThisActor:ClearAIWaypoints()
+					self.ThisActor:AddAISceneWaypoint(brain.Pos)
+					
+					self.Target = brain
+				end
 			end
 		end
 
@@ -39,7 +43,7 @@ function do_update_seeker(self)
 		if self.Target ~= nil and MovableMan:IsActor(self.Target) then
 			local d = SceneMan:ShortestDistance(self.Target.Pos, self.ThisActor.Pos, true).Magnitude;
 			
-			if d  < self.Range then
+			if d  < self.Range or d > self.SeekRange then
 				boom = true
 			end
 		else
