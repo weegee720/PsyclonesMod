@@ -1,8 +1,8 @@
 function do_create(self)
 	-- Set up constants
 	self.DistPerPower = 40
-	self.CoolDownInterval = 2500
-	self.PrintSkills = false
+	self.CoolDownInterval = 2000
+	self.PrintSkills = false;
 
 	self.WeaponTeleportEnabled = true;
 	self.DamageEnabled = true;
@@ -11,7 +11,14 @@ function do_create(self)
 	self.StealEnabled = true;
 	self.DistortEnabled = true;
 	self.RegenEnabled = true;
-	
+
+	self.WeaponTeleportCost = 15;
+	self.DamageCost = 45;
+	self.PushCost = 15;
+	self.ScreamCost = 25;
+	self.StealCost = 30;
+	self.DistortCost = 10;
+	self.RegenCost = 3;
 	
 	-- Find our owner actor
 	local found;
@@ -48,6 +55,11 @@ function do_create(self)
 			self.Energy = 100000;
 			self.Scale = 0;
 		end
+		
+		if self.ThisActor.PresetName == "Psyclone Mastermind" then
+			self.Scale = 0;
+		end
+		
 		
 		if self.ThisActor.PresetName == "Sarcophagus" then
 			self.CoolDownInterval = 750

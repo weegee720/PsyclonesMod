@@ -1,4 +1,9 @@
 function do_update(self)
+	-- Don't do anything when in edit mode
+	if ActivityMan:GetActivity().ActivityState == Activity.EDITING then
+		return
+	end
+
 	if MovableMan:IsActor(self.ThisActor) then
 		local gibthisactor = false
 		local gibthreat = false;
@@ -18,7 +23,7 @@ function do_update(self)
 		for actor in MovableMan.Actors do
 			-- Search for friends to amplify power
 			if actor.Team == self.ThisActor.Team then
-				if self.ThisActor.PresetName ~= "Psyclone Avatar" and actor.PresetName ~= "Psyclone Avatar" then
+				if self.ThisActor.PresetName ~= "Psyclone Avatar" and actor.PresetName ~= "Psyclone Avatar" and self.ThisActor.ID ~= actor.ID then
 					if actor.Pos.X ~= self.ThisActor.Pos.X or actor.Pos.Y ~= self.ThisActor.Pos.Y then
 						local d = SceneMan:ShortestDistance(actor.Pos, self.ThisActor.Pos, true).Magnitude;
 						
@@ -116,7 +121,7 @@ function do_update(self)
 
 		-- Check for applicable skill from closest to farthest
 		-- Teleport closest weapon
-		if self.Energy >= 55 and self.WeaponTeleportEnabled and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) and self.ThisActor.EquippedItem == nil then
+		if self.Energy >= self.WeaponTeleportCost and self.WeaponTeleportEnabled and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) and self.ThisActor.EquippedItem == nil then
 			local nearestitmdist = 1000000
 			local nearestitem = nil
 
@@ -138,7 +143,7 @@ function do_update(self)
 					print ("Teleport - "..tostring(math.ceil(self.FullPower)))
 				end
 			
-				self.Energy = self.Energy - 55
+				self.Energy = self.Energy - self.WeaponTeleportCost
 				Psyclones_AddPsyEffect(self.Pos)
 				Psyclones_AddPsyEffect(nearestitem.Pos)
 				
@@ -155,8 +160,8 @@ function do_update(self)
 		-- If we have target then use some skills on it
 		if MovableMan:IsActor(self.Threat) then
 			-- Damage and gib
-			if self.Energy >= 65 and nearestenemydist < self.EffectiveDistance * 0.4 and self.FullPower > 8 and self.DamageEnabled and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval)then
-				self.Energy = self.Energy - 65
+			if self.Energy >= self.DamageCost and nearestenemydist < self.EffectiveDistance * 0.4 and self.FullPower > 8 and self.DamageEnabled and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval)then
+				self.Energy = self.Energy - self.DamageCost
 
 				if self.PrintSkills then
 					print ("Damage - "..tostring(math.ceil(self.FullPower)).." - "..self.Threat.PresetName)
@@ -178,7 +183,7 @@ function do_update(self)
 			end--]]--
 
 			-- Steal weapon
-			if self.Energy >= 40 and nearestenemydist < self.EffectiveDistance * 0.6 and self.StealEnabled and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) then
+			if self.Energy >= self.StealCost and nearestenemydist < self.EffectiveDistance * 0.6 and self.StealEnabled and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) then
 				local weap = self.Threat.EquippedItem;
 
 				if weap ~= nil then
@@ -188,7 +193,7 @@ function do_update(self)
 							print ("Steal - "..tostring(math.ceil(self.FullPower)).." - "..self.Threat.PresetName)
 						end
 
-						self.Energy = self.Energy - 40
+						self.Energy = self.Energy - self.StealCost
 					
 						-- If enemy holds grenade then explode it
 						if newweap.ClassName == "TDExplosive" then
@@ -214,14 +219,14 @@ function do_update(self)
 			end--]]--
 
 			-- Push target
-			if self.Energy >= 25 and nearestenemydist < self.EffectiveDistance * 0.8 and self.PushEnabled and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) then
+			if self.Energy >= self.PushCost and nearestenemydist < self.EffectiveDistance * 0.8 and self.PushEnabled and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) then
 				local pow = 2.5 * self.FullPower
 			
 				if self.PrintSkills then
 					print ("Push - "..tostring(math.ceil(self.FullPower)).." - "..tostring(math.ceil(pow)).." - "..self.Threat.PresetName)
 				end
 
-				self.Energy = self.Energy - 25
+				self.Energy = self.Energy - self.PushCost
 
 				local target = self.Threat.Pos
 				local angle, d = Psyclones_GetAngle(self.Pos, target)
@@ -235,12 +240,12 @@ function do_update(self)
 			end--]]--
 
 			-- Scream to make actor drop it's items
-			if self.Energy >= 35 and nearestenemydist < self.EffectiveDistance * 0.9 and self.ScreamEnabled and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) then
+			if self.Energy >= self.ScreamCost and nearestenemydist < self.EffectiveDistance * 0.9 and self.ScreamEnabled and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) then
 				if self.PrintSkills then
 					print ("Scream - "..tostring(math.ceil(self.FullPower)).." - "..self.Threat.PresetName)
 				end
 
-				self.Energy = self.Energy - 35
+				self.Energy = self.Energy - self.ScreamCost
 				self.Threat:UnequipBGArm();
 				self.Threat:DropAllInventory();
 				
@@ -260,12 +265,12 @@ function do_update(self)
 			end--]]--
 			
 			-- Distort aiming
-			if self.Energy >= 15 and self.DistortEnabled and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) then
+			if self.Energy >= self.DistortCost and self.DistortEnabled and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) then
 				if self.PrintSkills then
 					print ("Distort - "..tostring(math.ceil(self.FullPower)).." - "..self.Threat.PresetName)
 				end
 
-				self.Energy = self.Energy - 15
+				self.Energy = self.Energy - self.DistortCost
 				self.AimDistortThreat = self.Threat;
 				Psyclones_AddPsyEffect(self.Pos)
 				self.CoolDownTimer:Reset();
@@ -312,8 +317,8 @@ function do_update(self)
 			
 			-- Heal if there's no one nearby and we have enough power
 			if self.Threat == nil and self.RegenEnabled then
-				if self.Energy >= 55 and self.ThisActor.Health < 100 and self.ThisActor.PresetName ~= "Psyclone Avatar" then
-					self.Energy = self.Energy - 5
+				if self.Energy >= 35 and self.ThisActor.Health < 100 and self.ThisActor.PresetName ~= "Psyclone Avatar" then
+					self.Energy = self.Energy - self.RegenCost
 					self.ThisActor.Health = self.ThisActor.Health + 1
 				end
 			end
