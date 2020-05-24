@@ -1,25 +1,26 @@
 function do_create(self)
 	-- Set up constants
-	self.DistPerPower = 40
-	self.CoolDownInterval = 2000
+	self.DistPerPower = 30
+	self.CoolDownInterval = 4000
 	self.PrintSkills = false;
 
 	self.WeaponTeleportEnabled = true;
 	self.DamageEnabled = true;
+	self.DamageDistortEnabled = false;
 	self.PushEnabled = true;
-	self.ScreamEnabled = true;
+	self.ScreamEnabled = false; -- Too many weapon loosing abilities which may annoy human players
 	self.StealEnabled = true;
 	self.DistortEnabled = true;
 	self.RegenEnabled = true;
 	self.ShieldEnabled = false;
 
 	self.WeaponTeleportCost = 15;
-	self.DamageCost = 45;
+	self.DamageCost = 65;
 	self.PushCost = 15;
 	self.ScreamCost = 25;
 	self.StealCost = 30;
-	self.DistortCost = 10;
-	self.RegenCost = 3;
+	self.DistortCost = 25;
+	self.RegenCost = 1;
 
 	
 	-- Find our owner actor
@@ -53,7 +54,7 @@ function do_create(self)
 		--print(self.BasePower)
 		
 		if self.ThisActor.PresetName == "Psyclone Avatar" then
-			self.CoolDownInterval = 1500
+			self.CoolDownInterval = 2500
 			self.Energy = 100000;
 			self.Scale = 0;
 		end
@@ -64,12 +65,13 @@ function do_create(self)
 		
 		
 		if self.ThisActor.PresetName == "Sarcophagus" then
-			self.CoolDownInterval = 2000
+			self.CoolDownInterval = 4000
 			self.Energy = 100000;
 
 			-- Sarcophagus can only do damage and shield
 			self.WeaponTeleportEnabled = false;
 			self.DamageEnabled = true;
+			self.DamageDistortEnabled = false;
 			self.PushEnabled = false;
 			self.ScreamEnabled = false;
 			self.StealEnabled = false;
@@ -113,7 +115,7 @@ function Psyclones_GetBasePower(actor)
 	elseif actor.PresetName == "Psyclone Heavy" then
 		return 9
 	elseif actor.PresetName == "Psyclone Mastermind" then
-		return 20
+		return 15
 	elseif actor.PresetName == "Sarcophagus" then
 		return 20
 	elseif actor.PresetName == "Psyclone Avatar" then

@@ -266,14 +266,14 @@ function do_update(self)
 		-- If we have target then use some skills on it
 		if MovableMan:IsActor(self.Threat) then
 			-- Damage and gib
-			if self.Energy >= self.DamageCost and nearestenemydist < self.EffectiveDistance * 0.4 and self.FullPower > 8 and self.DamageEnabled and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval)then
+			if self.Energy >= self.DamageCost and nearestenemydist < self.EffectiveDistance * 0.3 and self.FullPower > 10 and self.DamageEnabled and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval)then
 				self.Energy = self.Energy - self.DamageCost
 
 				if self.PrintSkills then
 					print ("Damage - "..tostring(math.ceil(self.FullPower)).." - "..self.Threat.PresetName)
 				end
 				
-				for i = 1, self.FullPower / 3 do
+				for i = 1, self.FullPower / 4 do
 					local pix = CreateMOPixel("Hit particle");
 					pix.Pos = self.Threat.Pos + Vector(-2 + math.random(4), -2 + math.random(4))
 					pix.Vel = Vector(-2 + math.random(4), -2 + math.random(4))
@@ -396,8 +396,10 @@ function do_update(self)
 
 		-- Do distortion after damage
 		if MovableMan:IsActor(self.DamageThreat) and not self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) then
-			self.DamageThreat:GetController():SetState(Controller.BODY_CROUCH, true)
-			self.DamageThreat:GetController():SetState(Controller.AIM_DOWN, true)
+			if self.DamageDistortEnabled then
+				self.DamageThreat:GetController():SetState(Controller.BODY_CROUCH, true)
+				self.DamageThreat:GetController():SetState(Controller.AIM_DOWN, true)
+			end
 		else
 			self.DamageThreat = nil;
 		end
