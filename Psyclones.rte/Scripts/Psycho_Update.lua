@@ -39,7 +39,7 @@ function do_update(self)
 					-- Find only nearest enemies
 					if d < self.EffectiveDistance and d < nearestenemydist then
 						-- Search for targets only if we have enough power and not recharging
-						if self.Energy >= 25 and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) then
+						if self.Energy >= 15 and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) then
 							local angle = Psyclones_GetAngle(self.Pos, actor.Pos)
 							local pos = self.Pos + Vector(math.cos(-angle) * 20, math.sin(-angle) * 20)
 
@@ -141,7 +141,7 @@ function do_update(self)
 					print ("Damage - "..tostring(math.ceil(self.FullPower)).." - "..self.Threat.PresetName)
 				end
 				
-				for i = 1, self.FullPower / 2.5 do
+				for i = 1, self.FullPower / 3 do
 					local pix = CreateMOPixel("Hit particle");
 					pix.Pos = self.Threat.Pos + Vector(-2 + math.random(4), -2 + math.random(4))
 					pix.Vel = Vector(-2 + math.random(4), -2 + math.random(4))
@@ -193,14 +193,14 @@ function do_update(self)
 			end--]]--
 
 			-- Push target
-			if self.Energy >= 20 and nearestenemydist < self.EffectiveDistance * 0.8 and self.PushEnabled and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) then
-				local pow = 3 * self.FullPower
+			if self.Energy >= 25 and nearestenemydist < self.EffectiveDistance * 0.8 and self.PushEnabled and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) then
+				local pow = 2.5 * self.FullPower
 			
 				if self.PrintSkills then
 					print ("Push - "..tostring(math.ceil(self.FullPower)).." - "..tostring(math.ceil(pow)).." - "..self.Threat.PresetName)
 				end
 
-				self.Energy = self.Energy - 20
+				self.Energy = self.Energy - 25
 
 				local target = self.Threat.Pos
 				local angle, d = Psyclones_GetAngle(self.Pos, target)
@@ -239,12 +239,12 @@ function do_update(self)
 			end--]]--
 			
 			-- Distort aiming
-			if self.Energy >= 10 and self.DistortEnabled and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) then
+			if self.Energy >= 15 and self.DistortEnabled and self.CoolDownTimer:IsPastSimMS(self.CoolDownInterval) then
 				if self.PrintSkills then
 					print ("Distort - "..tostring(math.ceil(self.FullPower)).." - "..self.Threat.PresetName)
 				end
 
-				self.Energy = self.Energy - 10
+				self.Energy = self.Energy - 15
 				self.AimDistortThreat = self.Threat;
 				Psyclones_AddPsyEffect(self.Pos)
 				self.CoolDownTimer:Reset();
